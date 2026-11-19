@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LAMA PB – návrh úvodní stránky</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="media/claude/hero.jpg">
+<style>
+  :root {
+    --ink: #17232d;
+    --paper: #efefe9;
+    --blue: #20477f;
+    --ice: #cde1f9;
+    --dark: #0c151f;
+    --navy: #132131;
+    --muted: #52626b;
+    --ease: cubic-bezier(.2,.7,.2,1);
+    --bar: 72px;
+    --gutter: clamp(18px, 4.6vw, 66px);
+    --display: "Barlow Condensed", "Avenir Next Condensed", "Arial Narrow", sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { background: var(--dark); scroll-padding-top: calc(var(--bar) + 16px); }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--paper);
+    font: 500 16px/1.55 "Manrope", "Avenir Next", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, p, ul { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid #79a8ee; outline-offset: 3px; }
+  img, video, canvas { display: block; }
+  .pad { padding-inline: var(--gutter); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- Menu (pinned, transparent over the hero, solid after scroll) ---------- */
+  .bar {
+    position: fixed; inset: 0 0 auto; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    height: var(--bar);
+    color: #fff;
+    transition: background .45s var(--ease), border-color .45s var(--ease), height .45s var(--ease);
+    border-bottom: 1px solid transparent;
+  }
+  .bar.is-solid { background: #0b1725; border-color: #ffffff26; }
+  :root.scrolled { --bar: 60px; }
+  .logo img { width: clamp(124px, 13vw, 168px); height: auto; filter: brightness(0) invert(1); }
+  .nav { display: flex; gap: clamp(18px, 2.6vw, 36px); }
+  .nav a { position: relative; padding-block: 10px; font-size: .86rem; font-weight: 700; }
+  .nav a::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 4px; height: 1.5px;
+    background: var(--ice); transform: scaleX(0); transform-origin: right; transition: transform .45s var(--ease);
+  }
+  .nav a:hover::after, .nav a:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+  .call {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px;
+    border: 1px solid #ffffff6e; font-size: .84rem; font-weight: 700; white-space: nowrap;
+    transition: background .3s, color .3s, border-color .3s;
+  }
+  .call b { font-weight: 800; letter-spacing: .01em; }
+  .call:hover { background: var(--ice); color: var(--ink); border-color: var(--ice); }
+  .menu { display: none; position: relative; }
+  .menu summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid #ffffff7a; font-size: .86rem; font-weight: 700; list-style: none; cursor: pointer; }
+  .menu summary::-webkit-details-marker { display: none; }
+  .menu nav { position: absolute; right: 0; top: calc(100% + 8px); display: grid; min-width: 220px; padding: 6px 16px; background: #101e2c; border: 1px solid #ffffff40; }
+  .menu nav a { display: flex; align-items: center; min-height: 48px; font-weight: 700; }
+  .menu nav a + a { border-top: 1px solid #ffffff22; }
+
+  /* ---------- Hero ---------- */
+  .hero { position: relative; z-index: 2; height: 185svh; background: transparent; pointer-events: none; }
+  .stage {
+    position: sticky; top: 0; height: 100svh; min-height: 560px; overflow: hidden; color: #fff; isolation: isolate; background: var(--dark);
+    /* the open gate becomes a portal: a growing hole that reveals the services section underneath */
+    --r: calc(var(--flood, 0) * 150vmax - 26vmax);
+  }
+  .stage.is-masking {
+    -webkit-mask-image: radial-gradient(circle at var(--fx, 89%) var(--fy, 56%), transparent var(--r), #000 calc(var(--r) + 24vmax));
+            mask-image: radial-gradient(circle at var(--fx, 89%) var(--fy, 56%), transparent var(--r), #000 calc(var(--r) + 24vmax));
+  }
+  .stage { pointer-events: auto; }
+  .stage.is-through { pointer-events: none; }
+  .intro, .media, .media img { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .media { transform: translate3d(var(--tx, 0px), var(--ty, 0px), 0) scale(var(--zoom, 1)); filter: brightness(var(--bright, 1)) saturate(var(--sat, 1)); transform-origin: var(--gx, 89%) var(--gy, 56%); will-change: transform; }
+  .media img { object-fit: cover; object-position: 50% 50%; }
+  .shade {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      linear-gradient(0deg, #080f17e6 0%, #080f1740 46%, #080f1700 70%),
+      linear-gradient(90deg, #09131bd9 0%, #09131b70 42%, #09131b00 72%);
+    opacity: var(--shade, 1);
+  }
+  /* light from the open gate */
+  .sun, .beam { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen; }
+  .sun {
+    background: radial-gradient(circle at var(--fx, var(--gx)) var(--fy, var(--gy)), #ffe2b8 0, #ffcf9a66 calc(4vmax * var(--sun, 1)), #9fc4ff1c calc(14vmax * var(--sun, 1)), transparent calc(30vmax * var(--sun, 1)));
+    opacity: var(--sun-o, .8);
+  }
+  .beam {
+    background: linear-gradient(197deg, transparent 0 38%, #ffd8a826 46%, #ffd8a814 56%, transparent 66%);
+    transform-origin: var(--fx, var(--gx)) var(--fy, var(--gy));
+    translate: var(--tx, 0px) var(--ty, 0px);
+    animation: beam 9s ease-in-out infinite alternate;
+  }
+  @keyframes beam { from { opacity: .55; transform: rotate(-2.5deg); } to { opacity: 1; transform: rotate(2deg); } }
+  .dust { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; mix-blend-mode: screen; }
+  /* light flood that becomes the services background */
+  .flood {
+    position: absolute; inset: 0; z-index: 3; pointer-events: none; background: var(--paper);
+    --r: calc(var(--flood, 0) * 130vmax - 30vmax);
+    -webkit-mask-image: radial-gradient(circle at var(--fx) var(--fy), #000 var(--r), transparent calc(var(--r) + 34vmax));
+            mask-image: radial-gradient(circle at var(--fx) var(--fy), #000 var(--r), transparent calc(var(--r) + 34vmax));
+    opacity: min(1, calc(var(--flood, 0) * 3));
+  }
+  .copy {
+    position: absolute; z-index: 2; left: var(--gutter); right: var(--gutter); bottom: clamp(108px, 17svh, 170px);
+    max-width: 980px;
+    transform: translate3d(0, var(--copy-y, 0px), 0);
+    opacity: var(--copy-o, 1);
+    filter: blur(var(--copy-b, 0px));
+  }
+  .locale { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; color: var(--ice); font-size: .74rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .locale::before { content: ""; width: 24px; height: 2px; background: #a7c9ee; }
+  h1 { font: 700 clamp(3.1rem, 8.6vw, 8.2rem)/1.02 var(--display); letter-spacing: -.024em; }
+  h1 .line { display: block; overflow: clip; padding-block: .14em; margin-block: -.14em; }
+  h1, h2 { display: flex; flex-direction: column; } /* no margin collapsing between lines */
+  h1 .line + .line { color: #dbe9fc; }
+  h1 .w { display: inline-block; }
+  .lead { max-width: 44ch; margin-top: 20px; color: #eef2f6; font-size: clamp(.95rem, 1.35vw, 1.12rem); }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 18px; min-height: 50px; padding: 0 18px;
+    background: var(--ice); color: #13263c; font-size: .9rem; font-weight: 800;
+    transition: background .3s, transform .5s var(--ease);
+  }
+  .btn:hover { background: #fff; }
+  .btn .ar { transition: transform .5s var(--ease); }
+  .btn:hover .ar { transform: translateY(3px); }
+  .btn.ghost { background: transparent; color: #fff; box-shadow: inset 0 0 0 1px #ffffff80; }
+  .btn.ghost:hover { background: #ffffff1a; }
+  .facts {
+    position: absolute; z-index: 2; left: var(--gutter); right: var(--gutter); bottom: 0;
+    display: grid; grid-template-columns: repeat(3, auto) 1fr; align-items: center; gap: 0 clamp(22px, 4vw, 56px);
+    padding-block: 20px 24px; border-top: 1px solid #ffffff33;
+    opacity: var(--facts-o, 1);
+  }
+  .fact { display: flex; align-items: baseline; gap: 10px; font-size: .82rem; color: #d6e2ef; font-weight: 600; }
+  .fact strong { font: 700 1.9rem/1 var(--display); color: #fff; letter-spacing: -.01em; }
+  .facts .pause {
+    justify-self: end; display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px;
+    border: 1px solid #ffffff55; background: transparent; color: #e7eef7; font: 700 .78rem/1 "Manrope", sans-serif; cursor: pointer;
+  }
+  .facts .pause:hover { background: #ffffff1a; }
+  .scroll-cue { position: absolute; z-index: 2; left: 50%; bottom: 96px; width: 1px; height: 46px; background: #ffffff30; overflow: hidden; opacity: var(--facts-o, 1); }
+  .scroll-cue::after { content: ""; position: absolute; inset: 0; background: #fff; animation: cue 2.2s var(--ease) infinite; }
+  @keyframes cue { from { transform: translateY(-100%); } to { transform: translateY(100%); } }
+
+  /* one-time intro on load */
+  .js .intro { animation: intro-media 1.6s var(--ease) both; }
+  @keyframes intro-media { from { transform: scale(1.07); filter: brightness(.5) saturate(.8); } to { transform: none; filter: none; } }
+  .js .sun { animation: intro-sun 2.2s var(--ease) .5s both; }
+  @keyframes intro-sun { from { opacity: 0; } }
+  .js h1 .w { animation: intro-word 1.05s var(--ease) both; animation-delay: calc(.18s + var(--i) * 60ms); }
+  @keyframes intro-word { from { transform: translateY(108%); } }
+  .js .locale, .js .lead, .js .actions, .js .facts { animation: intro-fade .9s var(--ease) both; }
+  .js .locale { animation-delay: .1s; }
+  .js .lead { animation-delay: .55s; }
+  .js .actions { animation-delay: .68s; }
+  .js .facts { animation-delay: .85s; }
+  @keyframes intro-fade { from { opacity: 0; transform: translateY(12px); } }
+
+  /* ---------- Services ---------- */
+  .services { position: relative; z-index: 1; margin-top: -100svh; padding-block: clamp(96px, 13svh, 150px) clamp(64px, 8vw, 120px); background: var(--paper); }
+  .s-head {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 30%); align-items: end; gap: 16px 40px;
+    padding-bottom: clamp(22px, 2.6vw, 34px); margin-bottom: clamp(22px, 2.6vw, 34px); border-bottom: 1px solid #b8c0c2;
+  }
+  .kicker { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; color: var(--blue); font-size: .74rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .kicker::before { content: ""; width: 24px; height: 2px; background: currentColor; }
+  h2 { font: 700 clamp(2.8rem, 5.6vw, 5.6rem)/1 var(--display); letter-spacing: -.022em; }
+  h2 .line { display: block; overflow: clip; padding-block: .14em; margin-block: -.14em; }
+  h2 .w { display: inline-block; }
+  .s-head p { color: var(--muted); font-size: .96rem; max-width: 34ch; }
+
+  .panels { display: flex; gap: clamp(8px, .9vw, 14px); height: clamp(460px, 64svh, 700px); }
+  .panel {
+    --open: 0;
+    position: relative; flex: 1 1 0; min-width: 0; overflow: hidden; isolation: isolate;
+    color: #fff; background: var(--dark);
+    transition: flex-grow .8s var(--ease);
+  }
+  .panel.is-open { flex-grow: 2.05; --open: 1; }
+  .panel .ph, .panel video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+  .panel .ph { transform: scale(calc(1.1 - var(--open) * .05)); transition: transform 1.1s var(--ease), filter .8s var(--ease); filter: saturate(calc(.7 + var(--open) * .25)) brightness(calc(.72 + var(--open) * .28)); }
+  /* no AI clips here: the real photo stays undistorted; it only drifts sideways and catches a sweep of light */
+  .panel.is-open .ph { animation: drift 16s ease-in-out infinite alternate; }
+  @keyframes drift { from { translate: -2% 0; } to { translate: 2% 0; } }
+  .gleam { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+  .gleam::before {
+    content: ""; position: absolute; top: -20%; bottom: -20%; left: 0; width: 45%;
+    background: linear-gradient(100deg, transparent 0%, #ffffff00 20%, #fff3e033 50%, #ffffff00 80%, transparent 100%);
+    transform: translateX(-160%) skewX(-12deg); mix-blend-mode: screen;
+  }
+  .panel.is-open .gleam::before { animation: gleam 1.3s var(--ease) .15s both; }
+  @keyframes gleam { from { transform: translateX(-160%) skewX(-12deg); } to { transform: translateX(330%) skewX(-12deg); } }
+  .panel::before {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background: linear-gradient(0deg, #08121af2 0%, #08121ab0 30%, #08121a26 62%, #08121a00 80%), linear-gradient(180deg, #08121a66 0%, transparent 22%);
+  }
+  .p-top { position: absolute; top: 22px; left: 24px; right: 24px; display: flex; justify-content: space-between; font-size: .74rem; font-weight: 800; letter-spacing: .14em; color: #d9e6f5; }
+  .p-body { position: absolute; left: 24px; right: 24px; bottom: 24px; }
+  .p-title { position: relative; padding-right: 58px; }
+  .panel h3 { font: 600 clamp(2.1rem, 3vw, 3.4rem)/.92 var(--display); letter-spacing: -.012em; white-space: nowrap; }
+  .panel h3 a::after { content: ""; position: absolute; inset: 0; z-index: 0; } /* whole panel clickable */
+  .circle {
+    flex: 0 0 44px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+    border: 1px solid #ffffff8a; font-size: 1.05rem; transition: background .4s, color .4s, border-color .4s, opacity .45s var(--ease), transform .6s var(--ease);
+    position: absolute; right: 0; bottom: 0; opacity: 0; transform: scale(.6) rotate(-45deg);
+  }
+  .panel.is-open .circle { opacity: 1; transform: none; transition-delay: 0s, 0s, 0s, .25s, .25s; }
+  .panel.is-open .circle { background: var(--ice); color: var(--ink); border-color: var(--ice); }
+  .p-line { margin-top: 8px; color: #e7eef5; font-size: .88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .subs {
+    position: relative; z-index: 1;
+    display: grid; grid-template-rows: 0fr;
+    transition: grid-template-rows .8s var(--ease);
+  }
+  .panel.is-open .subs { grid-template-rows: 1fr; }
+  .subs > ul { overflow: hidden; min-height: 0; }
+  /* chips are laid out at the final (open) width from the start, so nothing reflows while the panel widens */
+  .subs ul { width: calc(var(--ow, 100%) - 48px); }
+  .p-line { width: calc(var(--ow, 100%) - 48px); max-width: 100%; }
+  .subs li { opacity: var(--open); transform: translateY(calc((1 - var(--open)) * 12px)); transition: opacity .5s var(--ease), transform .7s var(--ease); }
+  .panel.is-open .subs li { transition-delay: calc(.18s + var(--i) * 50ms); }
+  .subs ul { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 16px; }
+  .subs a {
+    display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px;
+    border: 1px solid #ffffff4d; background: #0b1725a6;
+    font-size: .8rem; font-weight: 700; white-space: nowrap; transition: background .3s, color .3s, border-color .3s;
+  }
+  .subs a:hover { background: var(--ice); color: var(--ink); border-color: var(--ice); }
+
+  /* entry reveal: same language as the hero, from below */
+  .js .reveal .panel { clip-path: inset(100% 0 0 0); }
+  .js .reveal .panel .ph { scale: 1.12; transition: transform 1.1s var(--ease), filter .8s var(--ease), scale 1.5s var(--ease); }
+  .js .reveal.in .panel { clip-path: inset(0 0 0 0); transition: clip-path 1.15s var(--ease), flex-grow .8s var(--ease); transition-delay: calc(var(--i) * 90ms), 0s; }
+  .js .reveal.in .panel .ph { scale: 1; transition-delay: 0s, 0s, calc(var(--i) * 90ms); }
+  .js .rise .w { transform: translateY(108%); }
+  .js .rise.in .w { transform: none; transition: transform 1s var(--ease); transition-delay: calc(var(--i) * 60ms); }
+  .js .rise-fade { opacity: 0; transform: translateY(14px); }
+  .js .rise-fade.in { opacity: 1; transform: none; transition: opacity .9s var(--ease) .25s, transform .9s var(--ease) .25s; }
+
+  /* ---------- Shared section heads ---------- */
+  .sec-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 34ch); align-items: end; gap: 24px 48px; margin-bottom: clamp(32px, 4.4vw, 60px); }
+  .sec-head h2 { font-size: clamp(2.7rem, 6.2vw, 5.6rem); }
+  .sec-head > p { color: var(--muted); }
+  .more { display: inline-flex; align-items: center; gap: 12px; margin-top: 18px; padding: 13px 20px; border: 1px solid currentColor; border-radius: 999px; font-weight: 800; font-size: .9rem; transition: background .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease); }
+  .more span { transition: transform .45s var(--ease); }
+  .more:hover span, .more:focus-visible span { transform: translateX(5px); }
+
+  /* ---------- Z našich zakázek (gallery teaser) ---------- */
+  .work { padding-block: clamp(80px, 11vw, 150px); background: var(--navy); color: #f1f4f8; }
+  .work .kicker { color: #a9cdf8; }
+  .work .sec-head > p { color: #c3d2e3; }
+  .work .more:hover, .work .more:focus-visible { background: #fff; color: var(--navy); border-color: #fff; }
+  .shots { display: grid; grid-template-columns: 1.35fr 1fr .78fr; grid-template-rows: repeat(2, clamp(200px, 21vw, 300px)); gap: clamp(10px, 1.2vw, 18px); }
+  .shot { position: relative; margin: 0; overflow: hidden; border-radius: 8px; background: #0e1824; }
+  .shot:nth-child(1) { grid-row: span 2; }
+  .shot:nth-child(4) { grid-column: 2; }
+  .shot:nth-child(3) { grid-column: 3; grid-row: span 2; }
+  .shot img { position: absolute; inset: -9% 0; width: 100%; height: 118%; object-fit: cover; transform: translate3d(0, var(--py, 0px), 0) scale(1.02); transition: scale 1.1s var(--ease); will-change: transform; }
+  .shot::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(8 16 26 / .78), transparent 46%); pointer-events: none; }
+  .shot figcaption { position: absolute; left: 18px; right: 18px; bottom: 16px; z-index: 1; display: flex; justify-content: space-between; align-items: end; gap: 12px; font-size: .86rem; font-weight: 700; }
+  .shot figcaption b { font: 600 clamp(1.3rem, 1.9vw, 1.75rem)/1 var(--display); letter-spacing: .01em; text-transform: uppercase; }
+  .shot figcaption span { color: #b9cbe0; white-space: nowrap; }
+  .shot:hover img { scale: 1.07; }
+  .js .reveal .shot { clip-path: inset(100% 0 0 0 round 8px); }
+  .js .reveal.in .shot { clip-path: inset(0 0 0 0 round 8px); transition: clip-path 1.15s var(--ease); transition-delay: calc(var(--i) * 110ms); }
+
+  .swipe { display: none; align-items: center; gap: 10px; margin-top: 16px; color: #a9cdf8; font-size: .84rem; font-weight: 700; }
+  .swipe i { flex: 0 0 34px; height: 1.5px; background: currentColor; }
+
+  /* ---------- Pronájem (rental teaser) ---------- */
+  .rent { padding-block: clamp(80px, 11vw, 150px); background: var(--paper); }
+  .rent .more:hover, .rent .more:focus-visible { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .offers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(12px, 1.6vw, 24px); }
+  .offer { position: relative; display: flex; flex-direction: column; border-radius: 8px; overflow: hidden; background: #fff; box-shadow: 0 1px 0 #17232d14; transition: transform .6s var(--ease), box-shadow .6s var(--ease); }
+  .offer .pic { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #d9dcd6; }
+  .offer .pic img { width: 100%; height: 100%; object-fit: cover; transition: scale 1.1s var(--ease); }
+  .offer .txt { display: grid; gap: 8px; padding: 20px 22px 24px; }
+  .offer h3 { font: 600 clamp(1.7rem, 2.4vw, 2.2rem)/1 var(--display); text-transform: uppercase; }
+  .offer h3 a::after { content: ""; position: absolute; inset: 0; }
+  .offer p { color: var(--muted); font-size: .95rem; }
+  .offer .go { position: absolute; top: 14px; right: 14px; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #fff; color: var(--ink); font-weight: 800; transition: transform .5s var(--ease), background .4s var(--ease), color .4s var(--ease); }
+  .offer:hover { transform: translateY(-6px); box-shadow: 0 22px 40px -24px #17232d66; }
+  .offer:hover .pic img { scale: 1.06; }
+  .offer:hover .go { transform: rotate(45deg); background: var(--blue); color: #fff; }
+  .offer:focus-within { outline: 2px solid #79a8ee; outline-offset: 3px; }
+  .offer a:focus-visible { outline: none; }
+  .height { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px 30px; margin-top: clamp(14px, 1.6vw, 24px); padding: clamp(22px, 2.6vw, 34px) clamp(22px, 3vw, 40px); border-radius: 8px; background: var(--blue); color: #fff; }
+  .height p { max-width: 52ch; color: #d8e6f8; }
+  .height strong { display: block; margin-bottom: 4px; font: 600 clamp(1.6rem, 2.6vw, 2.3rem)/1.05 var(--display); text-transform: uppercase; color: #fff; }
+  .height .more { margin-top: 0; }
+  .height .more:hover, .height .more:focus-visible { background: #fff; color: var(--blue); border-color: #fff; }
+  .js .lift > * { opacity: 0; transform: translateY(28px); }
+  .js .lift.in > * { opacity: 1; transform: none; transition: opacity .9s var(--ease), transform 1s var(--ease); transition-delay: calc(var(--i, 0) * 90ms); }
+  .js .lift.in > .offer:hover { transform: translateY(-6px); transition-delay: 0s; }
+
+  /* ---------- Kontakt ---------- */
+  .contact { position: relative; padding-block: clamp(80px, 11vw, 150px); background: var(--dark); color: #f1f4f8; overflow: hidden; }
+  .contact::before { content: ""; position: absolute; right: -18vw; top: -30vw; width: 70vw; height: 70vw; border-radius: 50%; background: radial-gradient(circle, #20477f73, transparent 66%); pointer-events: none; }
+  .contact .kicker { color: #a9cdf8; }
+  .c-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(36px, 6vw, 96px); align-items: end; }
+  .contact h2 { font-size: clamp(2.7rem, 6.2vw, 5.6rem); }
+  .big-tel { display: inline-block; margin-top: clamp(22px, 3vw, 36px); font: 600 clamp(2.6rem, 6.6vw, 6rem)/1.05 var(--display); letter-spacing: .01em; background: linear-gradient(90deg, #fff 0 50%, var(--ice) 50% 100%) 100% 0 / 200% 100% no-repeat; -webkit-background-clip: text; background-clip: text; color: transparent; transition: background-position .7s var(--ease); }
+  .big-tel:hover, .big-tel:focus-visible { background-position: 0 0; }
+  .big-tel small { display: block; margin-bottom: 10px; font: 700 .82rem/1 "Manrope", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #a9cdf8; -webkit-text-fill-color: #a9cdf8; }
+  .c-list { display: grid; gap: 0; border-top: 1px solid #ffffff24; }
+  .c-list li { display: flex; justify-content: space-between; gap: 18px; padding: 16px 0; border-bottom: 1px solid #ffffff24; }
+  .c-list span { color: #9fb3c9; font-size: .9rem; }
+  .c-list a, .c-list b { font-weight: 700; text-align: right; }
+  .c-list a { background: linear-gradient(currentColor, currentColor) 100% 100% / 0 1.5px no-repeat; transition: background-size .45s var(--ease); }
+  .c-list a:hover, .c-list a:focus-visible { background-size: 100% 1.5px; background-position: 0 100%; }
+  .c-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  .contact .more:hover, .contact .more:focus-visible { background: #fff; color: var(--dark); border-color: #fff; }
+  .contact .more.solid { background: var(--ice); color: var(--dark); border-color: var(--ice); }
+
+  /* ---------- Footer ---------- */
+  .foot { padding-block: clamp(48px, 6vw, 80px) 28px; background: #081019; color: #b8c8da; font-size: .9rem; }
+  .f-cols { display: grid; grid-template-columns: 1.3fr repeat(4, minmax(0, 1fr)); gap: 32px clamp(20px, 3vw, 48px); padding-bottom: 40px; border-bottom: 1px solid #ffffff1c; }
+  .f-cols h3 { margin-bottom: 12px; font: 700 .78rem/1 "Manrope", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #fff; }
+  .f-cols li + li { margin-top: 7px; }
+  .f-brand img { width: 150px; height: auto; filter: brightness(0) invert(1); margin-bottom: 14px; }
+  .f-brand p { max-width: 30ch; }
+  .f-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; padding-top: 22px; font-size: .82rem; color: #8ea2b8; }
+  .foot a:hover, .foot a:focus-visible { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+
+  @media (max-width: 1080px) {
+    .f-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .f-brand { grid-column: 1 / -1; }
+  }
+  @media (max-width: 860px) {
+    .sec-head, .c-grid { grid-template-columns: 1fr; }
+    .shots { display: flex; grid-template-rows: none; gap: 12px; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+    .shots::-webkit-scrollbar { display: none; }
+    .shot { flex: 0 0 80%; height: min(62svh, 460px); scroll-snap-align: start; }
+    .shot:nth-child(3) { flex-basis: 64%; }
+    .shot img { inset: 0; height: 100%; transform: none; }
+    .js .reveal .shot { clip-path: none; }
+    .swipe { display: flex; }
+    .offers { grid-template-columns: 1fr; }
+    .offer { display: grid; grid-template-columns: 42% 1fr; }
+    .offer .pic { aspect-ratio: auto; min-height: 150px; }
+    .offer .txt { align-content: center; padding: 18px; }
+    .offer .go { top: auto; bottom: 12px; right: 12px; width: 36px; height: 36px; }
+    .offer p { font-size: .88rem; padding-right: 30px; }
+    .c-list li { flex-direction: column; gap: 2px; }
+    .c-list a, .c-list b { text-align: left; align-self: flex-start; }
+    .f-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* ---------- Mobile: stacked sticky cards ---------- */
+  @media (max-width: 860px) {
+    :root { --bar: 62px; }
+    :root.scrolled { --bar: 56px; }
+    .nav, .call { display: none; }
+    .menu { display: block; }
+    .hero { height: 175svh; }
+    .copy { bottom: 132px; }
+    h1 { font-size: clamp(2.9rem, 12.4vw, 4.6rem); }
+    .lead { max-width: 32ch; }
+    .facts { grid-template-columns: repeat(2, auto) 1fr; row-gap: 6px; padding-block: 16px 20px; }
+    .fact.region { display: none; }
+    .fact strong { font-size: 1.6rem; }
+    .scroll-cue { display: none; }
+    .s-head { grid-template-columns: 1fr; }
+    .panels { display: block; height: auto; }
+    .panel {
+      --open: 1;
+      position: sticky; top: calc(var(--bar) + 12px + var(--i) * 12px);
+      height: min(74svh, 600px); min-height: 440px; margin-bottom: 18px;
+      transform: scale(calc(1 - var(--cover, 0) * .07)); transform-origin: 50% 0;
+    }
+    .panel::after { content: ""; position: absolute; inset: 0; z-index: 3; background: #0c151f; opacity: calc(var(--cover, 0) * .45); pointer-events: none; }
+    .js .reveal .panel { clip-path: none; }
+    .panel.is-open { flex-grow: 1; }
+    .panel h3 { font-size: clamp(2.4rem, 10vw, 3.2rem); }
+    .p-line { white-space: normal; }
+    .subs { grid-template-rows: 1fr; }
+    .subs ul, .p-line { width: auto; }
+    .circle { opacity: 1; transform: none; }
+    .panel:first-child .ph { object-position: 14% 50% !important; }
+    .panel .ph { animation: drift 16s ease-in-out infinite alternate; }
+    .subs a { min-height: 40px; }
+  }
+  @media (max-width: 420px) {
+    .actions .btn { flex: 1 1 100%; justify-content: space-between; }
+  }
+
+  /* ---------- Reduced motion: a complete static page ---------- */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .hero { height: auto; }
+    .services { margin-top: 0; padding-top: clamp(48px, 6vw, 90px); background: var(--paper); }
+    .stage { position: relative; height: 100svh; -webkit-mask-image: none; mask-image: none; }
+    .flood, .dust, .beam, .scroll-cue, .facts .pause { display: none; }
+    .js .reveal .panel, .js .rise .w, .js .rise-fade { clip-path: none; transform: none; opacity: 1; scale: none; }
+    .panel { position: relative; top: auto; transform: none; filter: none; }
+    .shot img { inset: 0; height: 100%; transform: none; }
+  }
+
+  /* ---------- Inquiry form (replaces mailto/tel links) ---------- */
+  .contact .c-grid { align-items: start; }
+  .contact .c-list { margin-top: clamp(28px, 3vw, 40px); }
+  .big-tel:hover { background-position: 100% 0; }
+  .c-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .c-actions .more { margin-top: 0; }
+  .inq { display: grid; gap: 16px; padding: clamp(22px, 3vw, 40px); border: 1px solid #ffffff1f; border-radius: 12px; background: #0f1d2c; }
+  .inq-title { font: 700 clamp(1.8rem, 2.6vw, 2.4rem)/1 var(--display); text-transform: uppercase; letter-spacing: .01em; }
+  .f-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  .fld { display: grid; gap: 7px; }
+  .fld > span { color: #9fb3c9; font-size: .74rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .fld input, .fld select, .fld textarea { width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid #ffffff2e; border-radius: 8px; background: #0b1725; color: #f1f4f8; font: 600 1rem/1.4 "Manrope", system-ui, sans-serif; transition: border-color .3s var(--ease), background .3s var(--ease); }
+  .fld textarea { resize: vertical; min-height: 120px; }
+  .fld select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #a9cdf8 50%), linear-gradient(135deg, #a9cdf8 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px; }
+  .fld select option, .fld select optgroup { background: #0b1725; color: #f1f4f8; }
+  .fld input::placeholder, .fld textarea::placeholder { color: #6f8297; }
+  .fld input:hover, .fld select:hover, .fld textarea:hover { border-color: #ffffff52; }
+  .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--ice); background: #0d1b2b; }
+  .fld.bad input, .fld.bad textarea { border-color: #f0a27a; }
+  .fld.flash select { border-color: var(--ice); background: #15304f; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .chk { display: flex; gap: 12px; align-items: flex-start; color: #c4d0dc; font-size: .88rem; cursor: pointer; }
+  .chk input { flex: 0 0 auto; width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--ice); }
+  .chk a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+  .chk.bad span { color: #f0a27a; }
+  .f-end { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; margin-top: 4px; }
+  .inq .btn { border: 0; cursor: pointer; font: inherit; font-weight: 800; }
+  .f-status { color: #c4d0dc; font-size: .9rem; font-weight: 600; }
+  .f-status.ok { color: #9be0b4; }
+  .f-status.err { color: #f0a27a; }
+  @media (max-width: 860px) { .f-row { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<header class="bar pad" id="bar">
+  <a class="logo" href="#uvod" aria-label="LAMA PB, úvod"><img src="media/claude/logo.png" width="250" height="58" alt="LAMA PB s.r.o."></a>
+  <nav class="nav" aria-label="Hlavní navigace">
+    <a href="#sluzby">Služby</a>
+    <a href="pronajem.html">Pronájem</a>
+    <a href="galerie.html">Galerie</a>
+    <a href="o-firme.html">O firmě</a>
+    <a href="https://www.lamapb.com/kontakt/">Kontakt</a>
+  </nav>
+  <a class="call" href="#kontakt">Dispečink <b>737 766 106</b></a>
+  <details class="menu">
+    <summary>Menu <span aria-hidden="true">≡</span></summary>
+    <nav aria-label="Hlavní navigace">
+      <a href="#sluzby">Služby</a>
+      <a href="pronajem.html">Pronájem</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="o-firme.html">O firmě</a>
+      <a href="https://www.lamapb.com/kontakt/">Kontakt</a>
+      <a href="#kontakt">Dispečink 737 766 106</a>
+    </nav>
+  </details>
+</header>
+
+<main>
+  <section class="hero" id="uvod" aria-labelledby="h-hero">
+    <div class="stage" id="stage">
+      <div class="intro">
+        <div class="media" id="media">
+          <img id="hero-img" src="media/claude/hero.jpg" width="1600" height="900" alt="Interiér ocelové haly, světlo dopadá z otevřených vrat" fetchpriority="high">
+        </div>
+      </div>
+      <div class="beam" aria-hidden="true"></div>
+      <canvas class="dust" id="dust" aria-hidden="true"></canvas>
+      <div class="sun" aria-hidden="true"></div>
+      <div class="shade" aria-hidden="true"></div>
+
+      <div class="copy">
+        <p class="locale">Příbram · Praha · střední Čechy</p>
+        <h1 id="h-hero">
+          <span class="line"><span class="w" style="--i:0">Stavíme,</span> <span class="w" style="--i:1">malujeme</span></span>
+          <span class="line"><span class="w" style="--i:2">a</span> <span class="w" style="--i:3">půjčujeme</span> <span class="w" style="--i:4">techniku</span></span>
+        </h1>
+        <p class="lead">Rodinná firma od roku 1991. Zemní a stavební práce, ocelové haly, malířství, metalizace a pronájem pracovních plošin a strojů.</p>
+        <div class="actions">
+          <a class="btn" href="#sluzby">Prohlédnout služby <span class="ar" aria-hidden="true">↓</span></a>
+          <a class="btn ghost" href="#kontakt">Kontakt <span class="ar" aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+
+      <div class="facts" id="facts">
+        <p class="fact"><strong data-count="35">35</strong> let na trhu</p>
+        <p class="fact"><strong data-count="4">4</strong> obory</p>
+        <p class="fact region"><strong>3</strong> regiony působení</p>
+        <button class="pause" type="button" id="pause" aria-pressed="false">Ⅱ Pozastavit pohyb</button>
+      </div>
+      <span class="scroll-cue" aria-hidden="true"></span>
+    </div>
+  </section>
+
+  <section class="services pad" id="sluzby" aria-labelledby="h-services">
+    <div class="s-head">
+      <div>
+        <p class="kicker rise-fade">Služby</p>
+        <h2 id="h-services" class="rise"><span class="line"><span class="w" style="--i:0">Čtyři</span> <span class="w" style="--i:1">obory,</span></span><span class="line"><span class="w" style="--i:2">jedna</span> <span class="w" style="--i:3">firma</span></span></h2>
+      </div>
+      <p class="rise-fade">Od zemních prací a montáže hal po povrchové úpravy, výškové práce a pronájem techniky. Vyberte obor a uvidíte, co v něm děláme.</p>
+    </div>
+
+    <div class="panels reveal" id="panels">
+      <article class="panel is-open" style="--i:0">
+        <img class="ph" src="media/claude/stavebnictvi.jpg" alt="" decoding="async" style="object-position:58% 50%">
+        <div class="p-top"><span>01</span><span>7 služeb</span></div>
+        <div class="p-body">
+          <div class="p-title"><h3><a href="stavebnictvi.html">Stavebnictví</a></h3><span class="circle" aria-hidden="true">↗</span></div>
+          <p class="p-line">Zemní a bourací práce, ocelové haly, sanace mostů</p>
+          <div class="subs"><ul>
+            <li style="--i:0"><a href="stavebnictvi.html#stavebni-prace">Stavební práce</a></li>
+            <li style="--i:1"><a href="stavebnictvi.html#zemni-prace">Zemní práce</a></li>
+            <li style="--i:2"><a href="stavebnictvi.html#bouraci-prace">Bourací práce</a></li>
+            <li style="--i:3"><a href="stavebnictvi.html#ocelove-konstrukce">Ocelové konstrukce</a></li>
+            <li style="--i:4"><a href="stavebnictvi.html#sanace-mostu">Sanace mostů</a></li>
+            <li style="--i:5"><a href="stavebnictvi.html#strojni-strikane-omitky">Stříkané omítky</a></li>
+            <li style="--i:6"><a href="stavebnictvi.html#zateplovani-fasad">Zateplování fasád</a></li>
+          </ul></div>
+        </div>
+      </article>
+
+      <article class="panel" style="--i:1">
+        <img class="ph" src="media/claude/pronajem.jpg" alt="" decoding="async" style="object-position:52% 50%">
+        <div class="p-top"><span>02</span><span>3 služby</span></div>
+        <div class="p-body">
+          <div class="p-title"><h3><a href="pronajem.html">Pronájem</a></h3><span class="circle" aria-hidden="true">↗</span></div>
+          <p class="p-line">Pracovní plošiny, stroje a obytné vozy</p>
+          <div class="subs"><ul>
+            <li style="--i:0"><a href="pronajem.html#plosiny">Pracovní plošiny</a></li>
+            <li style="--i:1"><a href="pronajem.html#stroje">Pracovní stroje</a></li>
+            <li style="--i:2"><a href="http://www.obytnevozypribram.cz/">Obytné vozy</a></li>
+          </ul></div>
+        </div>
+      </article>
+
+      <article class="panel" style="--i:2">
+        <img class="ph" src="media/claude/malirstvi.jpg" alt="" decoding="async" style="object-position:50% 50%">
+        <div class="p-top"><span>03</span><span>3 služby</span></div>
+        <div class="p-body">
+          <div class="p-title"><h3><a href="malirstvi.html">Malířství</a></h3><span class="circle" aria-hidden="true">↗</span></div>
+          <p class="p-line">Malby, lakování a metalizace</p>
+          <div class="subs"><ul>
+            <li style="--i:0"><a href="malirstvi.html#malirske-prace">Malířské práce</a></li>
+            <li style="--i:1"><a href="malirstvi.html#lakyrnicke-prace">Lakýrnické práce</a></li>
+            <li style="--i:2"><a href="malirstvi.html#metalizace-zinkovani-sopovani">Metalizace, zinkování</a></li>
+          </ul></div>
+        </div>
+      </article>
+
+      <article class="panel" style="--i:3">
+        <img class="ph" src="media/claude/dalsi-sluzby.jpg" alt="" decoding="async" style="object-position:55% 40%">
+        <div class="p-top"><span>04</span><span>4 služby</span></div>
+        <div class="p-body">
+          <div class="p-title"><h3><a href="dalsi-sluzby.html">Další služby</a></h3><span class="circle" aria-hidden="true">↗</span></div>
+          <p class="p-line">Arboristika, výškové práce, zámečnictví</p>
+          <div class="subs"><ul>
+            <li style="--i:0"><a href="dalsi-sluzby.html#arboristicke-prace-a-rizikove-kaceni-stromu">Arboristika a kácení</a></li>
+            <li style="--i:1"><a href="dalsi-sluzby.html#vyskove-prace">Výškové práce</a></li>
+            <li style="--i:2"><a href="dalsi-sluzby.html#zamecnictvi">Zámečnictví</a></li>
+            <li style="--i:3"><a href="https://www.stkpribram.cz/">STK Příbram</a></li>
+          </ul></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="work pad" id="zakazky" aria-labelledby="h-work">
+    <div class="sec-head">
+      <div>
+        <p class="kicker rise-fade">Z našich zakázek</p>
+        <h2 id="h-work" class="rise"><span class="line"><span class="w" style="--i:0">Za</span> <span class="w" style="--i:1">námi</span></span><span class="line"><span class="w" style="--i:2">je</span> <span class="w" style="--i:3">vidět</span> <span class="w" style="--i:4">práce</span></span></h2>
+      </div>
+      <div class="rise-fade">
+        <p>Ocelové haly od základů po hotový interiér, fasády, plošiny. Pár ukázek z realizací, celou galerii najdete na samostatné stránce.</p>
+        <a class="more" href="galerie.html">Celá galerie <span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    <div class="shots reveal" id="shots">
+      <figure class="shot" style="--i:0"><img src="media/lamapb/ocel07.jpg" alt="Montáž ocelové haly, pracovníci v interiéru rozestavěné haly" loading="lazy" decoding="async"><figcaption><b>Ocelové konstrukce</b><span>Montáž haly</span></figcaption></figure>
+      <figure class="shot" style="--i:1"><img src="media/lamapb/ocel14.jpg" alt="Interiér dokončené ocelové haly" loading="lazy" decoding="async"><figcaption><b>Ocelové haly</b><span>Hotový interiér</span></figcaption></figure>
+      <figure class="shot" style="--i:2"><img src="media/lamapb/fasady03.jpg" alt="Zateplování fasády bytového domu" loading="lazy" decoding="async" style="object-position:50% 40%"><figcaption><b>Fasády</b><span>Zateplení</span></figcaption></figure>
+      <figure class="shot" style="--i:3"><img src="media/lamapb/ocel04.jpg" alt="Dokončená stavba s ocelovou konstrukcí" loading="lazy" decoding="async"><figcaption><b>Stavebnictví</b><span>Realizace</span></figcaption></figure>
+    </div>
+    <p class="swipe" aria-hidden="true"><i></i> Posuňte do strany</p>
+  </section>
+
+  <section class="rent pad" id="pronajem" aria-labelledby="h-rent">
+    <div class="sec-head">
+      <div>
+        <p class="kicker rise-fade">Pronájem techniky</p>
+        <h2 id="h-rent" class="rise"><span class="line"><span class="w" style="--i:0">Půjčíme</span> <span class="w" style="--i:1">vám</span></span><span class="line"><span class="w" style="--i:2">plošiny</span> <span class="w" style="--i:3">i</span> <span class="w" style="--i:4">stroje</span></span></h2>
+      </div>
+      <p class="rise-fade">Pracovní plošiny, stroje a obytné vozy z Příbrami. Termín a dostupnost ověříte nejrychleji na dispečinku.</p>
+    </div>
+    <div class="offers lift">
+      <article class="offer" style="--i:0">
+        <div class="pic"><img src="media/lamapb/plosina04.jpg" alt="Pracovník v koši pracovní plošiny" loading="lazy" decoding="async" style="object-position:50% 35%"></div>
+        <div class="txt"><h3><a href="pronajem.html#plosiny">Pracovní plošiny</a></h3><p>Kloubové, nůžkové i na podvozku nákladního auta.</p></div>
+        <span class="go" aria-hidden="true">↗</span>
+      </article>
+      <article class="offer" style="--i:1">
+        <div class="pic"><img src="media/lamapb/pronajemstroje.jpg" alt="Pracovní stroje k pronájmu" loading="lazy" decoding="async"></div>
+        <div class="txt"><h3><a href="pronajem.html#stroje">Pracovní stroje</a></h3><p>Technika pro zemní a stavební práce.</p></div>
+        <span class="go" aria-hidden="true">↗</span>
+      </article>
+      <article class="offer" style="--i:2">
+        <div class="pic"><img src="media/lamapb/obytnak.jpg" alt="Obytný vůz k pronájmu" loading="lazy" decoding="async"></div>
+        <div class="txt"><h3><a href="http://www.obytnevozypribram.cz/">Obytné vozy</a></h3><p>Půjčovna obytných vozů Příbram.</p></div>
+        <span class="go" aria-hidden="true">↗</span>
+      </article>
+    </div>
+    <div class="height rise-fade">
+      <div><strong>Jak vysoko potřebujete?</strong><p>Na stránce pronájmu vyberete plošinu podle výšky zdvihu. Když si nejste jistí, poradí vám dispečink.</p></div>
+      <a class="more" href="pronajem.html#plosiny">Vybrat plošinu <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+
+  <section class="contact pad" id="kontakt" aria-labelledby="h-contact">
+    <div class="c-grid">
+      <div class="c-info">
+        <p class="kicker rise-fade">Kontakt</p>
+        <h2 id="h-contact" class="rise"><span class="line"><span class="w" style="--i:0">Napište</span> <span class="w" style="--i:1">nám,</span></span><span class="line"><span class="w" style="--i:2">co</span> <span class="w" style="--i:3">potřebujete</span></span></h2>
+        <p class="big-tel rise-fade"><small>Dispečink</small>+420 737 766 106</p>
+        <ul class="c-list rise-fade">
+          <li><span>Fakturace</span><b>+420 602 875 280</b></li>
+          <li><span>Administrativa</span><b>+420 737 474 000</b></li>
+          <li><span>E-mail</span><b>info@lamapb.com</b></li>
+          <li><span>Sídlo</span><b>Brod 45, 261 01 Příbram</b></li>
+        </ul>
+        <div class="c-actions rise-fade">
+          <a class="more solid" href="https://www.lamapb.com/kontakt/">Všechny kontakty <span aria-hidden="true">→</span></a>
+          <a class="more" href="https://www.google.com/maps/search/?api=1&amp;query=Brod+45%2C+261+01+P%C5%99%C3%ADbram">Mapa <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+
+      <form class="inq rise-fade" id="poptavka" data-endpoint="" novalidate aria-labelledby="inq-title">
+        <p class="inq-title" id="inq-title">Poptávka</p>
+        <div class="f-row">
+          <label class="fld"><span>Jméno a příjmení *</span><input name="jmeno" autocomplete="name" required></label>
+          <label class="fld"><span>Telefon *</span><input name="telefon" type="tel" autocomplete="tel" inputmode="tel" required></label>
+        </div>
+        <div class="f-row">
+          <label class="fld"><span>E-mail</span><input name="email" type="email" autocomplete="email"></label>
+          <label class="fld"><span>Služba</span>
+            <select name="sluzba">
+              <option>Obecný dotaz</option>
+              <optgroup label="Stavebnictví"><option>Stavební práce</option><option>Zemní práce</option><option>Bourací práce</option><option>Ocelové konstrukce</option><option>Sanace mostů</option><option>Strojní stříkané omítky</option><option>Zateplování fasád</option></optgroup>
+              <optgroup label="Malířství"><option>Malířské práce</option><option>Lakýrnické práce</option><option>Metalizace – zinkování, šopování</option></optgroup>
+              <optgroup label="Pronájem"><option>Pronájem pracovní plošiny</option><option>Pronájem pracovního stroje</option></optgroup>
+              <optgroup label="Další služby"><option>Zámečnictví</option><option>Výškové práce</option><option>Arboristika a rizikové kácení</option></optgroup>
+            </select>
+          </label>
+        </div>
+        <label class="fld"><span>Místo a termín</span><input name="misto" placeholder="např. Příbram, polovina května"></label>
+        <label class="fld"><span>Co potřebujete *</span><textarea name="zprava" rows="4" required></textarea></label>
+        <label class="hp" aria-hidden="true">Nevyplňujte<input name="web" tabindex="-1" autocomplete="off"></label>
+        <label class="chk"><input type="checkbox" name="souhlas" required><span>Souhlasím se <a href="https://www.lamapb.com/gdpr/">zpracováním osobních údajů</a> pro vyřízení poptávky. *</span></label>
+        <div class="f-end">
+          <button class="btn" type="submit">Odeslat poptávku <span class="ar" aria-hidden="true">→</span></button>
+          <p class="f-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="foot pad">
+  <div class="f-cols">
+    <div class="f-brand">
+      <img data-logo width="250" height="58" alt="LAMA PB s.r.o.">
+      <p>Rodinná firma od roku 1991. Stavebnictví, pronájem techniky, malířství a další služby.</p>
+    </div>
+    <div><h3>Stavebnictví</h3><ul>
+      <li><a href="stavebnictvi.html#stavebni-prace">Stavební práce</a></li>
+      <li><a href="stavebnictvi.html#zemni-prace">Zemní práce</a></li>
+      <li><a href="stavebnictvi.html#ocelove-konstrukce">Ocelové konstrukce</a></li>
+      <li><a href="stavebnictvi.html#sanace-mostu">Sanace mostů</a></li>
+      <li><a href="stavebnictvi.html#zateplovani-fasad">Zateplování fasád</a></li>
+    </ul></div>
+    <div><h3>Pronájem</h3><ul>
+      <li><a href="pronajem.html#plosiny">Pracovní plošiny</a></li>
+      <li><a href="pronajem.html#stroje">Pracovní stroje</a></li>
+      <li><a href="http://www.obytnevozypribram.cz/">Obytné vozy</a></li>
+    </ul></div>
+    <div><h3>Malířství a další</h3><ul>
+      <li><a href="malirstvi.html">Malířství</a></li>
+      <li><a href="malirstvi.html#metalizace-zinkovani-sopovani">Metalizace</a></li>
+      <li><a href="dalsi-sluzby.html#arboristicke-prace-a-rizikove-kaceni-stromu">Arboristika</a></li>
+      <li><a href="dalsi-sluzby.html#vyskove-prace">Výškové práce</a></li>
+      <li><a href="https://www.stkpribram.cz/">STK Příbram</a></li>
+    </ul></div>
+    <div><h3>Firma</h3><ul>
+      <li><a href="o-firme.html">O firmě</a></li>
+      <li><a href="galerie.html">Galerie</a></li>
+      <li><a href="https://www.lamapb.com/kontakt/">Kontakt</a></li>
+      <li><a href="https://www.lamapb.com/gdpr/">GDPR</a></li>
+    </ul></div>
+  </div>
+  <div class="f-base">
+    <p>© LAMA PB s.r.o. · Brod 45, 261 01 Příbram</p>
+    <p>+420 737 766 106 · info@lamapb.com</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const doc = document.documentElement;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const fine = matchMedia("(hover: hover) and (pointer: fine)");
+  const mobileQ = matchMedia("(max-width: 860px)");
+  if (!reduce.matches) doc.classList.add("js");
+
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  const easeInOut = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+  const bar = document.getElementById("bar");
+  const hero = document.getElementById("uvod");
+  const stage = document.getElementById("stage");
+  const img = document.getElementById("hero-img");
+  const panelsWrap = document.getElementById("panels");
+  const panels = [...panelsWrap.querySelectorAll(".panel")];
+  const pauseBtn = document.getElementById("pause");
+  let paused = false;
+
+  /* --- Gate position in screen coordinates (object-fit: cover aware) --- */
+  const GATE = { u: .893, v: .56 };
+  function placeGate() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    const s = Math.max(w / 1600, h / 900);
+    const iw = 1600 * s, ih = 900 * s;
+    // On narrow screens shift the crop so the gate stays in frame.
+    const px = w / h < 1 ? .9 : .5;
+    img.style.objectPosition = `${px * 100}% 50%`;
+    const ox = (w - iw) * px, oy = (h - ih) * .5;
+    const gx = ox + GATE.u * iw, gy = oy + GATE.v * ih;
+    stage.style.setProperty("--gx", `${gx.toFixed(1)}px`);
+    stage.style.setProperty("--gy", `${gy.toFixed(1)}px`);
+    return { gx, gy };
+  }
+  let gate = placeGate();
+
+  /* --- Scroll-driven hero: dolly into the gate, light floods into services --- */
+  function updateHero(vh) {
+    const r = hero.getBoundingClientRect();
+    const p = clamp(-r.top / Math.max(1, r.height - vh));
+    const s = stage.style;
+    const d = easeInOut(clamp(p / .72));
+    const z = 1 + .9 * d;
+    // drift the gate towards the centre of the screen while we push in
+    const w = stage.clientWidth, h = stage.clientHeight;
+    // ...but never so far that an edge of the photo comes into view
+    const minTx = -(w - gate.gx) * (z - 1), maxTx = gate.gx * (z - 1);
+    const minTy = -(h - gate.gy) * (z - 1), maxTy = gate.gy * (z - 1);
+    const tx = clamp((w * .56 - gate.gx) * d, minTx, maxTx), ty = clamp((h * .5 - gate.gy) * d, minTy, maxTy);
+    s.setProperty("--zoom", z.toFixed(4));
+    s.setProperty("--tx", `${tx.toFixed(1)}px`);
+    s.setProperty("--ty", `${ty.toFixed(1)}px`);
+    s.setProperty("--fx", `${(gate.gx + tx).toFixed(1)}px`);
+    s.setProperty("--fy", `${(gate.gy + ty).toFixed(1)}px`);
+    const bp = clamp((p - .16) / .4);
+    s.setProperty("--bright", (1 + 1.1 * bp * bp).toFixed(3));
+    s.setProperty("--sat", (1 - .35 * bp).toFixed(3));
+    const c = clamp(p / .32);
+    s.setProperty("--copy-o", (1 - ease(c)).toFixed(3));
+    s.setProperty("--copy-y", `${(-90 * ease(c)).toFixed(1)}px`);
+    s.setProperty("--copy-b", `${(8 * c).toFixed(2)}px`);
+    s.setProperty("--facts-o", (1 - clamp(p / .14)).toFixed(3));
+    s.setProperty("--shade", (1 - .75 * clamp((p - .08) / .45)).toFixed(3));
+    s.setProperty("--sun", (1 + 1.6 * ease(clamp((p - .1) / .5))).toFixed(3));
+    s.setProperty("--sun-o", (.8 + .2 * clamp(p / .4)).toFixed(3));
+    const fl = easeInOut(clamp((p - .26) / .58));
+    s.setProperty("--flood", fl.toFixed(4));
+    stage.classList.toggle("is-through", fl > .35);
+    stage.classList.toggle("is-masking", fl > .001);
+    return p;
+  }
+
+  /* --- Menu: solid after the first bit of scroll --- */
+  function updateBar() { const s = scrollY > 40; bar.classList.toggle("is-solid", s); document.documentElement.classList.toggle("scrolled", s); }
+
+  /* --- Mobile stacked cards: a card dims and shrinks as the next one covers it --- */
+  function updateCards() {
+    if (!mobileQ.matches) { panels.forEach(p => p.style.removeProperty("--cover")); return; }
+    for (let i = 0; i < panels.length; i++) {
+      const next = panels[i + 1];
+      if (!next) { panels[i].style.setProperty("--cover", 0); continue; }
+      const a = panels[i].getBoundingClientRect(), b = next.getBoundingClientRect();
+      const cover = clamp((a.bottom - b.top) / a.height);
+      panels[i].style.setProperty("--cover", cover.toFixed(3));
+    }
+  }
+
+  let ticking = false;
+  function frame() {
+    ticking = false;
+    const vh = innerHeight;
+    updateBar();
+    if (reduce.matches) return;
+    heroP = updateHero(vh);
+    updateCards();
+  }
+  function schedule() { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }
+  let heroP = 0;
+  addEventListener("scroll", schedule, { passive: true });
+  addEventListener("resize", () => { gate = placeGate(); sizeDust(); schedule(); }, { passive: true });
+  reduce.addEventListener("change", () => location.reload());
+  frame();
+
+  /* --- One-time reveals (always from below) --- */
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+  }, { threshold: .18 });
+  document.querySelectorAll(".reveal, .rise, .rise-fade").forEach(el => io.observe(el));
+
+  /* --- Gallery teaser: gentle parallax inside each photo (desktop only) --- */
+  const shots = [...document.querySelectorAll(".shot img")];
+  let shotsOn = false, shotsRaf = 0;
+  function parallax() {
+    shotsRaf = 0;
+    if (reduce.matches || mobileQ.matches) { shots.forEach(i => i.style.removeProperty("--py")); return; }
+    const vh = innerHeight;
+    for (const im of shots) {
+      const r = im.parentElement.getBoundingClientRect();
+      const k = clamp((r.top + r.height / 2) / vh, -.2, 1.2) - .5;
+      im.style.setProperty("--py", `${(-k * r.height * .14).toFixed(1)}px`);
+    }
+  }
+  new IntersectionObserver(([e]) => { shotsOn = e.isIntersecting; if (shotsOn) parallax(); }).observe(document.getElementById("shots"));
+  addEventListener("scroll", () => { if (shotsOn && !shotsRaf) shotsRaf = requestAnimationFrame(parallax); }, { passive: true });
+  document.querySelectorAll(".lift").forEach(el => io.observe(el));
+
+  document.querySelectorAll("img[data-logo]").forEach(i => { i.src = document.querySelector(".logo img").src; });
+
+
+  /* --- Service panels: expand on hover / focus / tap, play clip when open --- */
+  function open(panel) {
+    if (mobileQ.matches) return;
+    panels.forEach(p => p.classList.toggle("is-open", p === panel));
+    syncVideos();
+  }
+  panels.forEach(panel => {
+    panel.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") open(panel); });
+    panel.addEventListener("focusin", () => open(panel));
+    // touch on a wide tablet: first tap opens, second follows the link
+    panel.addEventListener("click", e => {
+      if (!mobileQ.matches && !panel.classList.contains("is-open")) { e.preventDefault(); open(panel); }
+    });
+  });
+
+  /* width an open panel ends up with (flex 2.05 vs 1), used to pre-lay-out its chips */
+  function sizeOpen() {
+    if (mobileQ.matches) { panelsWrap.style.removeProperty("--ow"); return; }
+    const gap = parseFloat(getComputedStyle(panelsWrap).columnGap) || 0;
+    const w = (panelsWrap.clientWidth - gap * (panels.length - 1)) * 2.05 / (2.05 + panels.length - 1);
+    panelsWrap.style.setProperty("--ow", `${w.toFixed(1)}px`);
+  }
+  sizeOpen();
+  addEventListener("resize", sizeOpen, { passive: true });
+  panels.forEach(p => { const g = document.createElement("span"); g.className = "gleam"; g.setAttribute("aria-hidden", "true"); p.querySelector(".ph").after(g); });
+  const vids = panels.map(p => p.querySelector("video")).filter(Boolean);
+  vids.forEach(v => v.addEventListener("playing", () => {
+    const show = () => v.classList.add("has-frame");
+    v.requestVideoFrameCallback ? v.requestVideoFrameCallback(show) : show();
+  }));
+  let panelsVisible = false;
+  new IntersectionObserver(([e]) => { panelsVisible = e.isIntersecting; syncVideos(); }, { threshold: .25 }).observe(panelsWrap);
+  function syncVideos() {
+    for (const v of vids) {
+      const panel = v.closest(".panel");
+      const want = !reduce.matches && !paused && panelsVisible && !document.hidden &&
+        (mobileQ.matches ? isOnScreen(panel) : panel.classList.contains("is-open"));
+      if (want) { if (!v.src) v.src = v.dataset.src; v.play().catch(() => {}); }
+      else if (!v.paused) v.pause();
+    }
+  }
+  function isOnScreen(el) { const r = el.getBoundingClientRect(); return r.top < innerHeight * .8 && r.bottom > innerHeight * .2; }
+  if (mobileQ.matches) addEventListener("scroll", () => requestAnimationFrame(syncVideos), { passive: true });
+  document.addEventListener("visibilitychange", syncVideos);
+
+  /* --- Dust in the light (desktop only, only while the hero is visible) --- */
+  const canvas = document.getElementById("dust");
+  const ctx = canvas.getContext("2d");
+  let motes = [], dpr = 1, heroVisible = true, raf = 0, last = 0;
+  function sizeDust() {
+    dpr = Math.min(2, devicePixelRatio || 1);
+    canvas.width = stage.clientWidth * dpr; canvas.height = stage.clientHeight * dpr;
+  }
+  function spawn(init) {
+    // motes live in the light cone: from the gate towards the floor on the left
+    const t = Math.random();
+    const x = gate.gx - t * stage.clientWidth * .55 + (Math.random() - .5) * 120;
+    const y = gate.gy + t * stage.clientHeight * .32 + (Math.random() - .5) * (60 + t * 220);
+    return { x, y, vx: -(4 + Math.random() * 7), vy: (Math.random() - .6) * 4, r: .6 + Math.random() * 1.6,
+             a: 0, max: .25 + Math.random() * .5, life: init ? Math.random() * 9 : 0, span: 6 + Math.random() * 6 };
+  }
+  function dust(t) {
+    raf = 0;
+    if (!heroVisible || paused || document.hidden) return;
+    const dt = Math.min(.05, (t - last) / 1000 || 0); last = t;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const z = parseFloat(stage.style.getPropertyValue("--zoom")) || 1;
+    const fade = 1 - clamp(heroP / .5);
+    const tx = parseFloat(stage.style.getPropertyValue("--tx")) || 0, ty = parseFloat(stage.style.getPropertyValue("--ty")) || 0;
+    for (let i = 0; i < motes.length; i++) {
+      const m = motes[i];
+      m.life += dt; m.x += m.vx * dt; m.y += m.vy * dt + Math.sin(t / 900 + i) * .05;
+      const k = m.life / m.span;
+      m.a = m.max * Math.sin(Math.PI * clamp(k));
+      if (k >= 1) motes[i] = spawn(false);
+      const x = gate.gx + tx + (m.x - gate.gx) * z, y = gate.gy + ty + (m.y - gate.gy) * z;
+      ctx.globalAlpha = m.a * fade;
+      ctx.fillStyle = "#ffe6c4";
+      ctx.beginPath(); ctx.arc(x, y, m.r * z, 0, Math.PI * 2); ctx.fill();
+    }
+    raf = requestAnimationFrame(dust);
+  }
+  function startDust() { if (!raf && fine.matches && !reduce.matches && !mobileQ.matches) raf = requestAnimationFrame(dust); }
+  if (fine.matches && !reduce.matches && !mobileQ.matches) {
+    sizeDust();
+    motes = Array.from({ length: 46 }, () => spawn(true));
+    new IntersectionObserver(([e]) => { heroVisible = e.isIntersecting; startDust(); }).observe(stage);
+    startDust();
+  }
+
+  /* --- One shared pause for all continuous motion --- */
+  pauseBtn.addEventListener("click", () => {
+    paused = !paused;
+    pauseBtn.setAttribute("aria-pressed", paused);
+    pauseBtn.textContent = paused ? "▶ Spustit pohyb" : "Ⅱ Pozastavit pohyb";
+    document.querySelectorAll(".beam, .scroll-cue").forEach(el => el.style.animationPlayState = paused ? "paused" : "");
+    syncVideos();
+    if (!paused) startDust(); else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  });
+
+  /* --- Count-up of the facts on load --- */
+  if (!reduce.matches) document.querySelectorAll("[data-count]").forEach(el => {
+    const to = +el.dataset.count, t0 = performance.now() + 850;
+    const step = now => {
+      const k = clamp((now - t0) / 1200);
+      el.textContent = Math.round(to * ease(k));
+      if (k < 1) requestAnimationFrame(step);
+    };
+    el.textContent = 0; requestAnimationFrame(step);
+  });
+
+  /* close the mobile menu after picking a link */
+  const menu = document.querySelector(".menu");
+  menu.addEventListener("click", e => { if (e.target.closest("a")) menu.open = false; });
+})();
+</script>
+<script>
+(() => {
+  /* Inquiry form. No backend yet: set data-endpoint on #poptavka to a form service URL
+     (e.g. Web3Forms, Formspree or a PHP script on the hosting) and it posts there. */
+  const form = document.getElementById("poptavka");
+  if (!form) return;
+  const sel = form.elements.sluzba, msg = form.elements.zprava, status = form.querySelector(".f-status");
+  let autoMsg = "";
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href="#poptavka"]');
+    if (!a) return;
+    if (a.dataset.svc) {
+      const opt = [...sel.options].find(o => o.text === a.dataset.svc);
+      if (opt) { sel.value = opt.value; const f = sel.closest(".fld"); f.classList.add("flash"); setTimeout(() => f.classList.remove("flash"), 1400); }
+    }
+    if (a.dataset.msg && (!msg.value || msg.value === autoMsg)) { msg.value = autoMsg = a.dataset.msg; }
+    setTimeout(() => form.elements.jmeno.focus({ preventScroll: true }), 650);
+  });
+  const need = () => [...form.querySelectorAll("[required]")].filter(el => el.type === "checkbox" ? !el.checked : !el.value.trim());
+  form.addEventListener("input", e => e.target.closest(".fld, .chk")?.classList.remove("bad"));
+  form.addEventListener("change", e => e.target.closest(".chk")?.classList.remove("bad"));
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const missing = need();
+    form.querySelectorAll(".bad").forEach(x => x.classList.remove("bad"));
+    if (missing.length) {
+      missing.forEach(el => el.closest(".fld, .chk").classList.add("bad"));
+      status.className = "f-status err"; status.textContent = "Vyplňte prosím označená pole.";
+      missing[0].focus(); return;
+    }
+    if (form.elements.web.value) return;
+    const url = form.dataset.endpoint;
+    if (!url) {
+      status.className = "f-status ok";
+      status.textContent = "Ukázka: formulář je v pořádku, jen ještě není napojený na odesílání.";
+      return;
+    }
+    status.className = "f-status"; status.textContent = "Odesílám…";
+    try {
+      const r = await fetch(url, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
+      if (!r.ok) throw new Error(r.status);
+      form.reset(); status.className = "f-status ok"; status.textContent = "Děkujeme, poptávka odešla. Ozveme se vám.";
+    } catch {
+      status.className = "f-status err"; status.textContent = "Odeslání se nepovedlo. Zkuste to prosím znovu.";
+    }
+  });
+})();
+</script>
+</body>
+</html>

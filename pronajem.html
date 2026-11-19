@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pronájem plošin a strojů – LAMA PB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="media/lamapb/plosina05.jpg">
+<style>
+  :root {
+    --ink: #17232d;
+    --paper: #efefe9;
+    --blue: #20477f;
+    --ice: #cde1f9;
+    --dark: #0c151f;
+    --navy: #132131;
+    --muted: #52626b;
+    --ease: cubic-bezier(.2,.7,.2,1);
+    --bar: 72px;
+    --gutter: clamp(18px, 4.6vw, 66px);
+    --display: "Barlow Condensed", "Avenir Next Condensed", "Arial Narrow", sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { background: var(--dark); scroll-padding-top: calc(var(--bar) + 16px); }
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: var(--paper);
+    font: 500 16px/1.55 "Manrope", "Avenir Next", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, p, ul { margin: 0; }
+  ul { padding: 0; list-style: none; }
+  a { color: inherit; text-decoration: none; }
+  a:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid #79a8ee; outline-offset: 3px; }
+  img, video, canvas { display: block; }
+  .pad { padding-inline: var(--gutter); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- Menu (pinned, transparent over the hero, solid after scroll) ---------- */
+  .bar {
+    position: fixed; inset: 0 0 auto; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    height: var(--bar);
+    color: #fff;
+    transition: background .45s var(--ease), border-color .45s var(--ease), height .45s var(--ease);
+    border-bottom: 1px solid transparent;
+  }
+  .bar.is-solid { background: #0b1725; border-color: #ffffff26; }
+  :root.scrolled { --bar: 60px; }
+  .logo img { width: clamp(124px, 13vw, 168px); height: auto; filter: brightness(0) invert(1); }
+  .nav { display: flex; gap: clamp(18px, 2.6vw, 36px); }
+  .nav a { position: relative; padding-block: 10px; font-size: .86rem; font-weight: 700; }
+  .nav a::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 4px; height: 1.5px;
+    background: var(--ice); transform: scaleX(0); transform-origin: right; transition: transform .45s var(--ease);
+  }
+  .nav a:hover::after, .nav a:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+  .call {
+    display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 16px;
+    border: 1px solid #ffffff6e; font-size: .84rem; font-weight: 700; white-space: nowrap;
+    transition: background .3s, color .3s, border-color .3s;
+  }
+  .call b { font-weight: 800; letter-spacing: .01em; }
+  .call:hover { background: var(--ice); color: var(--ink); border-color: var(--ice); }
+  .menu { display: none; position: relative; }
+  .menu summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid #ffffff7a; font-size: .86rem; font-weight: 700; list-style: none; cursor: pointer; }
+  .menu summary::-webkit-details-marker { display: none; }
+  .menu nav { position: absolute; right: 0; top: calc(100% + 8px); display: grid; min-width: 220px; padding: 6px 16px; background: #101e2c; border: 1px solid #ffffff40; }
+  .menu nav a { display: flex; align-items: center; min-height: 48px; font-weight: 700; }
+  .menu nav a + a { border-top: 1px solid #ffffff22; }
+
+  .locale { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; color: var(--ice); font-size: .74rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .locale::before { content: ""; width: 24px; height: 2px; background: #a7c9ee; }
+  h1 { font: 700 clamp(3.1rem, 8.6vw, 8.2rem)/1.02 var(--display); letter-spacing: -.024em; }
+  h1 .line { display: block; overflow: clip; padding-block: .14em; margin-block: -.14em; }
+  h1, h2 { display: flex; flex-direction: column; } /* no margin collapsing between lines */
+  h1 .line + .line { color: #dbe9fc; }
+  h1 .w { display: inline-block; }
+  .lead { max-width: 44ch; margin-top: 20px; color: #eef2f6; font-size: clamp(.95rem, 1.35vw, 1.12rem); }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 18px; min-height: 50px; padding: 0 18px;
+    background: var(--ice); color: #13263c; font-size: .9rem; font-weight: 800;
+    transition: background .3s, transform .5s var(--ease);
+  }
+  .btn:hover { background: #fff; }
+  .btn .ar { transition: transform .5s var(--ease); }
+  .btn:hover .ar { transform: translateY(3px); }
+  .btn.ghost { background: transparent; color: #fff; box-shadow: inset 0 0 0 1px #ffffff80; }
+  .btn.ghost:hover { background: #ffffff1a; }
+  .kicker { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; color: var(--blue); font-size: .74rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .kicker::before { content: ""; width: 24px; height: 2px; background: currentColor; }
+  h2 { font: 700 clamp(2.8rem, 5.6vw, 5.6rem)/1 var(--display); letter-spacing: -.022em; }
+  h2 .line { display: block; overflow: clip; padding-block: .14em; margin-block: -.14em; }
+  h2 .w { display: inline-block; }
+  .js .rise .w { transform: translateY(108%); }
+  .js .rise.in .w { transform: none; transition: transform 1s var(--ease); transition-delay: calc(var(--i) * 60ms); }
+  .js .rise-fade { opacity: 0; transform: translateY(14px); }
+  .js .rise-fade.in { opacity: 1; transform: none; transition: opacity .9s var(--ease) .25s, transform .9s var(--ease) .25s; }
+  /* ---------- Shared section heads ---------- */
+  .sec-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 34ch); align-items: end; gap: 24px 48px; margin-bottom: clamp(32px, 4.4vw, 60px); }
+  .sec-head h2 { font-size: clamp(2.7rem, 6.2vw, 5.6rem); }
+  .sec-head > p { color: var(--muted); }
+  .more { display: inline-flex; align-items: center; gap: 12px; margin-top: 18px; padding: 13px 20px; border: 1px solid currentColor; border-radius: 999px; font-weight: 800; font-size: .9rem; transition: background .35s var(--ease), color .35s var(--ease), border-color .35s var(--ease); }
+  .more span { transition: transform .45s var(--ease); }
+  .more:hover span, .more:focus-visible span { transform: translateX(5px); }
+  /* ---------- Kontakt ---------- */
+  .contact { position: relative; padding-block: clamp(80px, 11vw, 150px); background: var(--dark); color: #f1f4f8; overflow: hidden; }
+  .contact::before { content: ""; position: absolute; right: -18vw; top: -30vw; width: 70vw; height: 70vw; border-radius: 50%; background: radial-gradient(circle, #20477f73, transparent 66%); pointer-events: none; }
+  .contact .kicker { color: #a9cdf8; }
+  .c-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(36px, 6vw, 96px); align-items: end; }
+  .contact h2 { font-size: clamp(2.7rem, 6.2vw, 5.6rem); }
+  .big-tel { display: inline-block; margin-top: clamp(22px, 3vw, 36px); font: 600 clamp(2.6rem, 6.6vw, 6rem)/1.05 var(--display); letter-spacing: .01em; background: linear-gradient(90deg, #fff 0 50%, var(--ice) 50% 100%) 100% 0 / 200% 100% no-repeat; -webkit-background-clip: text; background-clip: text; color: transparent; transition: background-position .7s var(--ease); }
+  .big-tel:hover, .big-tel:focus-visible { background-position: 0 0; }
+  .big-tel small { display: block; margin-bottom: 10px; font: 700 .82rem/1 "Manrope", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #a9cdf8; -webkit-text-fill-color: #a9cdf8; }
+  .c-list { display: grid; gap: 0; border-top: 1px solid #ffffff24; }
+  .c-list li { display: flex; justify-content: space-between; gap: 18px; padding: 16px 0; border-bottom: 1px solid #ffffff24; }
+  .c-list span { color: #9fb3c9; font-size: .9rem; }
+  .c-list a, .c-list b { font-weight: 700; text-align: right; }
+  .c-list a { background: linear-gradient(currentColor, currentColor) 100% 100% / 0 1.5px no-repeat; transition: background-size .45s var(--ease); }
+  .c-list a:hover, .c-list a:focus-visible { background-size: 100% 1.5px; background-position: 0 100%; }
+  .c-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+  .contact .more:hover, .contact .more:focus-visible { background: #fff; color: var(--dark); border-color: #fff; }
+  .contact .more.solid { background: var(--ice); color: var(--dark); border-color: var(--ice); }
+
+  /* ---------- Footer ---------- */
+  .foot { padding-block: clamp(48px, 6vw, 80px) 28px; background: #081019; color: #b8c8da; font-size: .9rem; }
+  .f-cols { display: grid; grid-template-columns: 1.3fr repeat(4, minmax(0, 1fr)); gap: 32px clamp(20px, 3vw, 48px); padding-bottom: 40px; border-bottom: 1px solid #ffffff1c; }
+  .f-cols h3 { margin-bottom: 12px; font: 700 .78rem/1 "Manrope", sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #fff; }
+  .f-cols li + li { margin-top: 7px; }
+  .f-brand img { width: 150px; height: auto; filter: brightness(0) invert(1); margin-bottom: 14px; }
+  .f-brand p { max-width: 30ch; }
+  .f-base { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; padding-top: 22px; font-size: .82rem; color: #8ea2b8; }
+  .foot a:hover, .foot a:focus-visible { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+
+  @media (max-width: 1080px) {
+    .f-cols { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .f-brand { grid-column: 1 / -1; }
+  }
+  @media (max-width: 860px) {
+    .sec-head, .c-grid { grid-template-columns: 1fr; }
+    .shots { display: flex; grid-template-rows: none; gap: 12px; margin-inline: calc(var(--gutter) * -1); padding-inline: var(--gutter); overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter); scrollbar-width: none; }
+    .shots::-webkit-scrollbar { display: none; }
+    .shot { flex: 0 0 80%; height: min(62svh, 460px); scroll-snap-align: start; }
+    .shot:nth-child(3) { flex-basis: 64%; }
+    .shot img { inset: 0; height: 100%; transform: none; }
+    .js .reveal .shot { clip-path: none; }
+    .swipe { display: flex; }
+    .offers { grid-template-columns: 1fr; }
+    .offer { display: grid; grid-template-columns: 42% 1fr; }
+    .offer .pic { aspect-ratio: auto; min-height: 150px; }
+    .offer .txt { align-content: center; padding: 18px; }
+    .offer .go { top: auto; bottom: 12px; right: 12px; width: 36px; height: 36px; }
+    .offer p { font-size: .88rem; padding-right: 30px; }
+    .c-list li { flex-direction: column; gap: 2px; }
+    .c-list a, .c-list b { text-align: left; align-self: flex-start; }
+    .f-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  @media (max-width: 860px) {
+    :root { --bar: 62px; }
+    :root.scrolled { --bar: 56px; }
+    .nav, .call { display: none; }
+    .menu { display: block; }
+    h1 { font-size: clamp(2.9rem, 12.4vw, 4.6rem); }
+  }
+  @media (max-width: 420px) { .actions .btn { flex: 1 1 100%; justify-content: space-between; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  /* ---------- Subpage hero ---------- */
+  .sub-hero { position: relative; min-height: min(86svh, 820px); display: flex; align-items: flex-end; padding-block: 132px clamp(48px, 7vw, 90px); color: #fff; overflow: hidden; background: var(--dark); isolation: isolate; }
+  .sub-hero .bg { position: absolute; inset: 0; z-index: -2; transform: translate3d(0, var(--hy, 0px), 0); will-change: transform; }
+  .sub-hero .bg img { width: 100%; height: 100%; object-fit: cover; object-position: 30% 40%; transform: scale(1.08); transition: transform 2.4s var(--ease); }
+  .loaded .sub-hero .bg img { transform: none; }
+  .sub-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, #080f17f0 0%, #080f1799 38%, #080f1733 70%, #080f1766 100%), linear-gradient(90deg, #09131bcc 0%, #09131b33 60%, transparent 85%); }
+  .sub-hero .crumbs { display: flex; gap: 10px; margin-bottom: 18px; font-size: .8rem; font-weight: 700; color: #c4d6ea; }
+  .sub-hero .crumbs a:hover { color: #fff; text-decoration: underline; text-underline-offset: 4px; }
+  .sub-hero h1 { font-size: clamp(3rem, 8vw, 7.6rem); max-width: 12ch; }
+  .js .sub-hero h1 .w { transform: translateY(108%); }
+  .js .loaded .sub-hero h1 .w { transform: none; transition: transform 1.1s var(--ease); transition-delay: calc(.15s + var(--i) * 70ms); }
+  .js .sub-hero .lead, .js .sub-hero .actions, .js .sub-hero .crumbs { opacity: 0; transform: translateY(14px); }
+  .js .loaded .sub-hero .lead, .js .loaded .sub-hero .actions, .js .loaded .sub-hero .crumbs { opacity: 1; transform: none; transition: opacity .9s var(--ease) .55s, transform .9s var(--ease) .55s; }
+
+  @media (max-width: 860px) { .sub-hero { padding-top: 122px; } }
+  /* ---------- Sticky sub navigation ---------- */
+  .subnav { position: sticky; top: calc(var(--bar) - 1px); z-index: 40; display: flex; gap: 6px; padding-block: 10px; background: var(--paper); border-bottom: 1px solid #17232d1a; overflow-x: auto; scrollbar-width: none; transition: top .45s var(--ease), box-shadow .45s var(--ease); }
+  .subnav.is-stuck { box-shadow: 0 10px 24px -18px #17232d80; }
+  .subnav::-webkit-scrollbar { display: none; }
+  .subnav a { position: relative; flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 999px; font-size: .86rem; font-weight: 800; color: var(--muted); transition: color .35s var(--ease), background .35s var(--ease); }
+  .subnav a:hover { color: var(--ink); }
+  .subnav a.is-on { color: #fff; background: var(--ink); }
+
+  /* ---------- Platform picker ---------- */
+  .picker { padding-block: clamp(70px, 9vw, 130px); background: var(--paper); }
+  .pk-grid { display: grid; grid-template-columns: minmax(300px, 400px) minmax(0, 1fr); gap: clamp(24px, 4vw, 64px); align-items: start; }
+  .pk-ctrl { position: sticky; top: calc(var(--bar) + 84px); display: grid; gap: 22px; padding: clamp(22px, 2.4vw, 32px); border-radius: 10px; background: var(--navy); color: #eef3f8; }
+  .pk-read { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 18px; }
+  .pk-read label { display: block; margin-bottom: 6px; color: #a9cdf8; font-size: .74rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .pk-num { font: 700 clamp(4.4rem, 7vw, 6.2rem)/.85 var(--display); letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .pk-num small { font-size: .42em; margin-left: 4px; color: #a9cdf8; }
+  .pk-floor { margin-top: 8px; color: #b7c8db; font-size: .88rem; }
+  /* the gauge: a building with floors that light up to the chosen height */
+  .gauge { position: relative; width: 92px; height: 210px; }
+  .gauge .house { position: absolute; left: 10px; bottom: 0; width: 46px; height: 100%; display: flex; flex-direction: column-reverse; gap: 3px; }
+  .gauge .house i { flex: 1; border-radius: 2px; background: #ffffff14; transition: background .45s var(--ease); }
+  .gauge .house i.lit { background: #cde1f9c7; }
+  .gauge .rail { position: absolute; right: 8px; bottom: 0; width: 2px; height: 100%; background: #ffffff26; }
+  .gauge .bucket { position: absolute; right: 0; bottom: calc(var(--h) * 100%); width: 18px; height: 12px; margin-bottom: -6px; border: 2px solid var(--ice); border-top: 0; border-radius: 0 0 3px 3px; transition: bottom .55s var(--ease); }
+  .gauge .bucket::before { content: ""; position: absolute; right: 7px; top: 10px; width: 2px; height: calc(var(--h) * 210px); background: linear-gradient(var(--ice), #cde1f900); transition: height .55s var(--ease); }
+  .gauge .line { position: absolute; left: 0; right: 0; bottom: calc(var(--h) * 100%); border-top: 1px dashed #cde1f999; transition: bottom .55s var(--ease); }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; background: transparent; cursor: pointer; }
+  input[type=range]::-webkit-slider-runnable-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--ice) 0 var(--p), #ffffff26 var(--p) 100%); }
+  input[type=range]::-moz-range-track { height: 6px; border-radius: 3px; background: linear-gradient(90deg, var(--ice) 0 var(--p), #ffffff26 var(--p) 100%); }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; margin-top: -11px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 6px #cde1f940; transition: box-shadow .3s; }
+  input[type=range]::-moz-range-thumb { width: 28px; height: 28px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 6px #cde1f940; }
+  input[type=range]:focus-visible { outline: none; }
+  input[type=range]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px #79a8ee; }
+  .ticks { display: flex; justify-content: space-between; margin-top: -4px; color: #8ea6c0; font-size: .74rem; font-weight: 700; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; border-radius: 8px; background: #ffffff12; }
+  .seg button { min-height: 44px; padding: 6px 10px; border: 0; border-radius: 6px; background: transparent; color: #c9d7e6; font: 700 .82rem/1.2 "Manrope", sans-serif; cursor: pointer; transition: background .35s var(--ease), color .35s var(--ease); }
+  .seg button[aria-pressed=true] { background: var(--ice); color: var(--ink); }
+  .pk-ctrl fieldset { margin: 0; padding: 0; border: 0; }
+  .pk-ctrl legend { margin-bottom: 8px; color: #a9cdf8; font-size: .74rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .switch { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; font-weight: 700; font-size: .92rem; cursor: pointer; }
+  .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .switch .knob { position: relative; flex: 0 0 48px; height: 28px; border-radius: 999px; background: #ffffff26; transition: background .35s var(--ease); }
+  .switch .knob::after { content: ""; position: absolute; left: 4px; top: 4px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .4s var(--ease); }
+  .switch input:checked + .knob { background: #5d8fd6; }
+  .switch input:checked + .knob::after { transform: translateX(20px); }
+  .switch input:focus-visible + .knob { outline: 2px solid #79a8ee; outline-offset: 3px; }
+  .pk-ctrl .btn { justify-content: space-between; }
+
+  .pk-sum { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px 20px; margin-bottom: 16px; }
+  .pk-sum p { font-weight: 700; }
+  .pk-sum span { color: var(--muted); font-size: .88rem; }
+  .types { display: grid; gap: 12px; }
+  .type { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 20px; padding: 22px 24px; border-radius: 10px; background: #fff; box-shadow: 0 1px 0 #17232d14; transition: opacity .5s var(--ease), filter .5s var(--ease), box-shadow .5s var(--ease), background .5s var(--ease); }
+  .type h3 { font: 600 clamp(1.6rem, 2.2vw, 2rem)/1 var(--display); text-transform: uppercase; }
+  .type .max { align-self: start; font: 700 1.5rem/1 var(--display); white-space: nowrap; }
+  .type .max small { font: 700 .72rem/1 "Manrope", sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+  .type ul { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .type li { padding: 5px 10px; border-radius: 999px; background: #eef1ee; font-size: .8rem; font-weight: 700; color: #3c4a53; }
+  .type .meter { grid-column: 1 / -1; position: relative; height: 8px; margin-top: 12px; border-radius: 4px; background: #e6e9e4; }
+  .type .meter b { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--max) / 30 * 100%); border-radius: 4px; background: #9db6d4; transition: background .5s var(--ease); }
+  .type .meter b.unknown { width: 100%; background: repeating-linear-gradient(135deg, #c5d3e3 0 6px, #e6e9e4 6px 12px); }
+  .type .meter i { position: absolute; top: -6px; bottom: -6px; left: calc(var(--h) / 30 * 100%); width: 2px; margin-left: -1px; background: var(--ink); transition: left .55s var(--ease); }
+  .type .why { grid-column: 1 / -1; display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: .86rem; font-weight: 700; }
+  .type .why::before { content: ""; flex: 0 0 10px; height: 10px; border-radius: 50%; background: currentColor; }
+  .type.ok .why { color: #23814d; }
+  .type.ok .bar b { background: var(--blue); }
+  .type.ask .why { color: #8a6312; }
+  .type.no { opacity: .52; filter: grayscale(1); }
+  .type.no .why { color: #8b3a32; }
+  .type.best { box-shadow: 0 0 0 2px var(--blue), 0 24px 44px -28px #20477f99; }
+  .type .badge { position: absolute; top: -11px; left: 20px; padding: 4px 10px; border-radius: 999px; background: var(--blue); color: #fff; font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; opacity: 0; transform: translateY(6px); transition: opacity .4s var(--ease), transform .4s var(--ease); }
+  .type.best .badge { opacity: 1; transform: none; }
+  .pk-note { margin-top: 16px; color: var(--muted); font-size: .86rem; }
+
+  /* ---------- Machines & motorhomes ---------- */
+  .split { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: clamp(28px, 5vw, 80px); align-items: center; padding-block: clamp(70px, 9vw, 130px); }
+  .split.alt { background: #e4e6df; }
+  .split.alt .pic { order: 2; }
+  .split .pic { position: relative; aspect-ratio: 3 / 2; border-radius: 10px; overflow: hidden; background: #d0d4cc; }
+  .split .pic img { width: 100%; height: 118%; object-fit: cover; transform: translate3d(0, var(--py, -8%), 0); will-change: transform; }
+  .js .split .pic { clip-path: inset(100% 0 0 0 round 10px); }
+  .js .split.in .pic { clip-path: inset(0 0 0 0 round 10px); transition: clip-path 1.2s var(--ease); }
+  .split h2 { margin-bottom: 18px; }
+  .split p { max-width: 46ch; color: var(--muted); }
+  .split .row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+  .split .more:hover, .split .more:focus-visible { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .split .more.solid { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .split .more.solid:hover { background: var(--blue); border-color: var(--blue); }
+
+  @media (max-width: 860px) {
+    .sub-hero { min-height: 78svh; }
+    .pk-grid, .split { grid-template-columns: minmax(0, 1fr); }
+    .split.alt .pic { order: 0; }
+    .pk-ctrl { position: relative; top: auto; }
+    .gauge { height: 150px; width: 80px; }
+    .gauge .bucket::before { height: calc(var(--h) * 150px); }
+    .type { padding: 20px 18px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sub-hero .bg img { transform: none; }
+    .split .pic img { height: 100%; transform: none; }
+  }
+
+  /* ---------- Inquiry form (replaces mailto/tel links) ---------- */
+  .contact .c-grid { align-items: start; }
+  .contact .c-list { margin-top: clamp(28px, 3vw, 40px); }
+  .big-tel:hover { background-position: 100% 0; }
+  .c-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+  .c-actions .more { margin-top: 0; }
+  .inq { display: grid; gap: 16px; padding: clamp(22px, 3vw, 40px); border: 1px solid #ffffff1f; border-radius: 12px; background: #0f1d2c; }
+  .inq-title { font: 700 clamp(1.8rem, 2.6vw, 2.4rem)/1 var(--display); text-transform: uppercase; letter-spacing: .01em; }
+  .f-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+  .fld { display: grid; gap: 7px; }
+  .fld > span { color: #9fb3c9; font-size: .74rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .fld input, .fld select, .fld textarea { width: 100%; min-height: 48px; padding: 12px 14px; border: 1px solid #ffffff2e; border-radius: 8px; background: #0b1725; color: #f1f4f8; font: 600 1rem/1.4 "Manrope", system-ui, sans-serif; transition: border-color .3s var(--ease), background .3s var(--ease); }
+  .fld textarea { resize: vertical; min-height: 120px; }
+  .fld select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #a9cdf8 50%), linear-gradient(135deg, #a9cdf8 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 14px) 50%; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px; }
+  .fld select option, .fld select optgroup { background: #0b1725; color: #f1f4f8; }
+  .fld input::placeholder, .fld textarea::placeholder { color: #6f8297; }
+  .fld input:hover, .fld select:hover, .fld textarea:hover { border-color: #ffffff52; }
+  .fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--ice); background: #0d1b2b; }
+  .fld.bad input, .fld.bad textarea { border-color: #f0a27a; }
+  .fld.flash select { border-color: var(--ice); background: #15304f; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .chk { display: flex; gap: 12px; align-items: flex-start; color: #c4d0dc; font-size: .88rem; cursor: pointer; }
+  .chk input { flex: 0 0 auto; width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--ice); }
+  .chk a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+  .chk.bad span { color: #f0a27a; }
+  .f-end { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; margin-top: 4px; }
+  .inq .btn { border: 0; cursor: pointer; font: inherit; font-weight: 800; }
+  .f-status { color: #c4d0dc; font-size: .9rem; font-weight: 600; }
+  .f-status.ok { color: #9be0b4; }
+  .f-status.err { color: #f0a27a; }
+  @media (max-width: 860px) { .f-row { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<header class="bar pad" id="bar">
+  <a class="logo" href="index.html" aria-label="LAMA PB, úvod"><img src="media/lamapb/logo.png" width="250" height="58" alt="LAMA PB s.r.o."></a>
+  <nav class="nav" aria-label="Hlavní navigace">
+    <a href="index.html#sluzby">Služby</a>
+    <a href="pronajem.html" aria-current="page">Pronájem</a>
+    <a href="galerie.html">Galerie</a>
+    <a href="o-firme.html">O firmě</a>
+    <a href="#kontakt">Kontakt</a>
+  </nav>
+  <a class="call" href="#kontakt">Dispečink <b>737 766 106</b></a>
+  <details class="menu">
+    <summary>Menu <span aria-hidden="true">≡</span></summary>
+    <nav aria-label="Hlavní navigace">
+      <a href="index.html#sluzby">Služby</a>
+      <a href="pronajem.html" aria-current="page">Pronájem</a>
+      <a href="galerie.html">Galerie</a>
+      <a href="o-firme.html">O firmě</a>
+      <a href="#kontakt">Kontakt</a>
+      <a href="#kontakt">Dispečink 737 766 106</a>
+    </nav>
+  </details>
+</header>
+
+<main>
+  <section class="sub-hero pad" aria-labelledby="h-hero">
+    <div class="bg"><img id="hero-img" src="media/lamapb/plosina05.jpg" alt="Koš pracovní plošiny proti obloze" fetchpriority="high"></div>
+    <div>
+      <p class="crumbs"><a href="index.html">Úvod</a><span aria-hidden="true">/</span><span>Pronájem</span></p>
+      <h1 id="h-hero"><span class="line"><span class="w" style="--i:0">Plošiny,</span> <span class="w" style="--i:1">stroje</span></span><span class="line"><span class="w" style="--i:2">a</span> <span class="w" style="--i:3">obytné</span> <span class="w" style="--i:4">vozy</span></span></h1>
+      <p class="lead">Pracovní plošiny se zdvihem až 30 m, technika pro stavbu a obytné vozy. Z Příbrami pro Prahu a střední Čechy.</p>
+      <div class="actions">
+        <a class="btn" href="#plosiny">Vybrat plošinu <span class="ar" aria-hidden="true">↓</span></a>
+        <a class="btn ghost" href="#kontakt">Kontakt <span class="ar" aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+  </section>
+
+  <nav class="subnav pad" aria-label="Pronájem">
+    <a href="#plosiny" class="is-on">Pracovní plošiny</a>
+    <a href="#stroje">Pracovní stroje</a>
+    <a href="#vozy">Obytné vozy</a>
+    <a href="#kontakt">Poptávka</a>
+  </nav>
+
+  <section class="picker pad" id="plosiny" aria-labelledby="h-pick">
+    <div class="sec-head">
+      <div>
+        <p class="kicker rise-fade">Pracovní plošiny</p>
+        <h2 id="h-pick" class="rise"><span class="line"><span class="w" style="--i:0">Jak</span> <span class="w" style="--i:1">vysoko</span></span><span class="line"><span class="w" style="--i:2">potřebujete?</span></span></h2>
+      </div>
+      <p class="rise-fade">Nastavte výšku a terén. Ukážeme, který typ plošiny se na práci hodí. Konkrétní stroj a termín pak domluvíte s dispečinkem.</p>
+    </div>
+
+    <div class="pk-grid">
+      <form class="pk-ctrl" id="pk" onsubmit="return false">
+        <div class="pk-read">
+          <div>
+            <label for="h">Výška zdvihu</label>
+            <output class="pk-num" id="h-out" for="h">12<small>m</small></output>
+            <p class="pk-floor" id="h-floor">přibližně 4. patro</p>
+          </div>
+          <div class="gauge" aria-hidden="true">
+            <div class="house" id="house"></div>
+            <span class="rail"></span><span class="line"></span><span class="bucket"></span>
+          </div>
+        </div>
+        <div>
+          <input type="range" id="h" min="2" max="30" step="1" value="12" aria-describedby="h-floor">
+          <div class="ticks" aria-hidden="true"><span>2 m</span><span>15 m</span><span>30 m</span></div>
+        </div>
+        <fieldset>
+          <legend>Povrch</legend>
+          <div class="seg" id="surf">
+            <button type="button" data-v="hard" aria-pressed="true">Rovný, zpevněný</button>
+            <button type="button" data-v="rough" aria-pressed="false">Nezpevněný terén</button>
+          </div>
+        </fieldset>
+        <label class="switch"><span>Potřebuji boční dosah</span><input type="checkbox" id="reach"><span class="knob" aria-hidden="true"></span></label>
+        <a class="btn" id="ask" href="#poptavka" data-svc="Pronájem pracovní plošiny">Poptat tuto plošinu <span aria-hidden="true">→</span></a>
+      </form>
+
+      <div>
+        <div class="pk-sum"><p id="sum" aria-live="polite">Vyhovují 4 typy plošin</p><span>Maximální zdvih podle typu plošiny</span></div>
+        <div class="types" id="types">
+          <article class="type" data-max="15" data-surf="hard" data-reach="0"><span class="badge">Nejlépe sedí</span>
+            <h3>Elektrické nůžkové</h3><p class="max"><small>zdvih až</small>15 m</p>
+            <ul><li>Samohybné</li><li>Jen rovný zpevněný povrch</li><li>Pneumatiky, které nešpiní</li><li>Integrovaná nabíječka</li><li>Ochrana proti převrácení</li></ul>
+            <div class="meter"><b></b><i></i></div><p class="why"></p></article>
+          <article class="type" data-max="18" data-surf="any" data-reach="0"><span class="badge">Nejlépe sedí</span>
+            <h3>Dieselové nůžkové</h3><p class="max"><small>zdvih až</small>18 m</p>
+            <ul><li>Samohybné</li><li>I nezpevněný povrch</li><li>Výsuvné hydraulické podpěry</li></ul>
+            <div class="meter"><b></b><i></i></div><p class="why"></p></article>
+          <article class="type" data-max="30" data-surf="any" data-reach="1"><span class="badge">Nejlépe sedí</span>
+            <h3>Přívěsové</h3><p class="max"><small>zdvih až</small>30 m</p>
+            <ul><li>Za auto se schváleným tažným zařízením</li><li>Velký stranový rozsah</li></ul>
+            <div class="meter"><b></b><i></i></div><p class="why"></p></article>
+          <article class="type" data-max="30" data-surf="any" data-reach="0"><span class="badge">Nejlépe sedí</span>
+            <h3>Nástavbové</h3><p class="max"><small>zdvih až</small>30 m</p>
+            <ul><li>Na podvozku automobilu</li><li>I do obtížně přístupného terénu</li></ul>
+            <div class="meter"><b></b><i></i></div><p class="why"></p></article>
+          <article class="type" data-max="" data-surf="any" data-reach="1"><span class="badge">Nejlépe sedí</span>
+            <h3>Kloubové</h3><p class="max"><small>zdvih</small>dle modelu</p>
+            <ul><li>Zpevněný i nezpevněný povrch</li><li>Stranový dosah stroje</li></ul>
+            <div class="meter"><b class="unknown"></b><i></i></div><p class="why"></p></article>
+        </div>
+        <p class="pk-note">Nejste si jistí? <a href="#kontakt"><b>Ozvěte se dispečinku</b></a>, poradíme podle místa a druhu práce.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="split reveal-pic pad" id="stroje" aria-labelledby="h-mach">
+    <div class="pic"><img src="media/lamapb/pronajemstroje.jpg" alt="Vibrační deska při hutnění štěrku" loading="lazy" decoding="async"></div>
+    <div>
+      <p class="kicker rise-fade">Pracovní stroje</p>
+      <h2 id="h-mach" class="rise"><span class="line"><span class="w" style="--i:0">Technika</span></span><span class="line"><span class="w" style="--i:1">pro</span> <span class="w" style="--i:2">stavbu</span></span></h2>
+      <p class="rise-fade">Stroje pro zemní a stavební práce. Co je právě volné a na jak dlouho, vám nejrychleji řekne dispečink.</p>
+      <div class="row rise-fade">
+        <a class="more solid" href="#poptavka" data-svc="Pronájem pracovního stroje">Napsat poptávku <span aria-hidden="true">→</span></a>
+        <a class="more" href="#kontakt">Kontakt na dispečink <span aria-hidden="true">↓</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="split alt reveal-pic pad" id="vozy" aria-labelledby="h-rv">
+    <div class="pic"><img src="media/lamapb/obytnak.jpg" alt="Obytný vůz na pobřežní silnici" loading="lazy" decoding="async"></div>
+    <div>
+      <p class="kicker rise-fade">Obytné vozy</p>
+      <h2 id="h-rv" class="rise"><span class="line"><span class="w" style="--i:0">Na</span> <span class="w" style="--i:1">dovolenou</span></span><span class="line"><span class="w" style="--i:2">obytňákem</span></span></h2>
+      <p class="rise-fade">Obytné vozy půjčujeme přes samostatný web Obytné vozy Příbram. Najdete tam vozy, ceny i volné termíny.</p>
+      <div class="row rise-fade">
+        <a class="more solid" href="http://www.obytnevozypribram.cz/">Obytné vozy Příbram <span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="contact pad" id="kontakt" aria-labelledby="h-contact">
+    <div class="c-grid">
+      <div class="c-info">
+        <p class="kicker rise-fade">Kontakt</p>
+        <h2 id="h-contact" class="rise"><span class="line"><span class="w" style="--i:0">Napište</span> <span class="w" style="--i:1">nám,</span></span><span class="line"><span class="w" style="--i:2">co</span> <span class="w" style="--i:3">potřebujete</span></span></h2>
+        <p class="big-tel rise-fade"><small>Dispečink</small>+420 737 766 106</p>
+        <ul class="c-list rise-fade">
+          <li><span>Fakturace</span><b>+420 602 875 280</b></li>
+          <li><span>Administrativa</span><b>+420 737 474 000</b></li>
+          <li><span>E-mail</span><b>info@lamapb.com</b></li>
+          <li><span>Sídlo</span><b>Brod 45, 261 01 Příbram</b></li>
+        </ul>
+        <div class="c-actions rise-fade">
+          <a class="more solid" href="https://www.lamapb.com/kontakt/">Všechny kontakty <span aria-hidden="true">→</span></a>
+          <a class="more" href="https://www.google.com/maps/search/?api=1&amp;query=Brod+45%2C+261+01+P%C5%99%C3%ADbram">Mapa <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+
+      <form class="inq rise-fade" id="poptavka" data-endpoint="" novalidate aria-labelledby="inq-title">
+        <p class="inq-title" id="inq-title">Poptávka</p>
+        <div class="f-row">
+          <label class="fld"><span>Jméno a příjmení *</span><input name="jmeno" autocomplete="name" required></label>
+          <label class="fld"><span>Telefon *</span><input name="telefon" type="tel" autocomplete="tel" inputmode="tel" required></label>
+        </div>
+        <div class="f-row">
+          <label class="fld"><span>E-mail</span><input name="email" type="email" autocomplete="email"></label>
+          <label class="fld"><span>Služba</span>
+            <select name="sluzba">
+              <option>Obecný dotaz</option>
+              <optgroup label="Stavebnictví"><option>Stavební práce</option><option>Zemní práce</option><option>Bourací práce</option><option>Ocelové konstrukce</option><option>Sanace mostů</option><option>Strojní stříkané omítky</option><option>Zateplování fasád</option></optgroup>
+              <optgroup label="Malířství"><option>Malířské práce</option><option>Lakýrnické práce</option><option>Metalizace – zinkování, šopování</option></optgroup>
+              <optgroup label="Pronájem"><option>Pronájem pracovní plošiny</option><option>Pronájem pracovního stroje</option></optgroup>
+              <optgroup label="Další služby"><option>Zámečnictví</option><option>Výškové práce</option><option>Arboristika a rizikové kácení</option></optgroup>
+            </select>
+          </label>
+        </div>
+        <label class="fld"><span>Místo a termín</span><input name="misto" placeholder="např. Příbram, polovina května"></label>
+        <label class="fld"><span>Co potřebujete *</span><textarea name="zprava" rows="4" required></textarea></label>
+        <label class="hp" aria-hidden="true">Nevyplňujte<input name="web" tabindex="-1" autocomplete="off"></label>
+        <label class="chk"><input type="checkbox" name="souhlas" required><span>Souhlasím se <a href="https://www.lamapb.com/gdpr/">zpracováním osobních údajů</a> pro vyřízení poptávky. *</span></label>
+        <div class="f-end">
+          <button class="btn" type="submit">Odeslat poptávku <span class="ar" aria-hidden="true">→</span></button>
+          <p class="f-status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="foot pad">
+  <div class="f-cols">
+    <div class="f-brand">
+      <img data-logo width="250" height="58" alt="LAMA PB s.r.o.">
+      <p>Rodinná firma od roku 1991. Stavebnictví, pronájem techniky, malířství a další služby.</p>
+    </div>
+    <div><h3>Stavebnictví</h3><ul>
+      <li><a href="stavebnictvi.html#stavebni-prace">Stavební práce</a></li>
+      <li><a href="stavebnictvi.html#zemni-prace">Zemní práce</a></li>
+      <li><a href="stavebnictvi.html#ocelove-konstrukce">Ocelové konstrukce</a></li>
+      <li><a href="stavebnictvi.html#sanace-mostu">Sanace mostů</a></li>
+      <li><a href="stavebnictvi.html#zateplovani-fasad">Zateplování fasád</a></li>
+    </ul></div>
+    <div><h3>Pronájem</h3><ul>
+      <li><a href="pronajem.html#plosiny">Pracovní plošiny</a></li>
+      <li><a href="pronajem.html#stroje">Pracovní stroje</a></li>
+      <li><a href="http://www.obytnevozypribram.cz/">Obytné vozy</a></li>
+    </ul></div>
+    <div><h3>Malířství a další</h3><ul>
+      <li><a href="malirstvi.html">Malířství</a></li>
+      <li><a href="malirstvi.html#metalizace-zinkovani-sopovani">Metalizace</a></li>
+      <li><a href="dalsi-sluzby.html#arboristicke-prace-a-rizikove-kaceni-stromu">Arboristika</a></li>
+      <li><a href="dalsi-sluzby.html#vyskove-prace">Výškové práce</a></li>
+      <li><a href="https://www.stkpribram.cz/">STK Příbram</a></li>
+    </ul></div>
+    <div><h3>Firma</h3><ul>
+      <li><a href="o-firme.html">O firmě</a></li>
+      <li><a href="galerie.html">Galerie</a></li>
+      <li><a href="https://www.lamapb.com/kontakt/">Kontakt</a></li>
+      <li><a href="https://www.lamapb.com/gdpr/">GDPR</a></li>
+    </ul></div>
+  </div>
+  <div class="f-base">
+    <p>© LAMA PB s.r.o. · Brod 45, 261 01 Příbram</p>
+    <p>+420 737 766 106 · info@lamapb.com</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const doc = document.documentElement;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)");
+  const mobileQ = matchMedia("(max-width: 860px)");
+  if (!reduce.matches) doc.classList.add("js");
+  requestAnimationFrame(() => requestAnimationFrame(() => document.body.classList.add("loaded")));
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+
+  /* menu + hero parallax */
+  const bar = document.getElementById("bar");
+  const heroBg = document.querySelector(".sub-hero .bg");
+  const subnav = document.querySelector(".subnav");
+  const pics = [...document.querySelectorAll(".split .pic img")];
+  let tick = false;
+  function frame() {
+    tick = false;
+    const sc = scrollY > 40;
+    bar.classList.toggle("is-solid", sc);
+    doc.classList.toggle("scrolled", sc);
+    subnav.classList.toggle("is-stuck", subnav.getBoundingClientRect().top <= bar.offsetHeight + 1);
+    if (reduce.matches) return;
+    const y = scrollY;
+    if (y < innerHeight * 1.2) heroBg.style.setProperty("--hy", `${(y * .25).toFixed(1)}px`);
+    for (const im of pics) {
+      const r = im.parentElement.getBoundingClientRect();
+      if (r.bottom < 0 || r.top > innerHeight) continue;
+      const k = clamp((r.top + r.height / 2) / innerHeight, -.2, 1.2);
+      im.style.setProperty("--py", `${(-16 * k).toFixed(2)}%`);
+    }
+  }
+  const schedule = () => { if (!tick) { tick = true; requestAnimationFrame(frame); } };
+  addEventListener("scroll", schedule, { passive: true });
+  addEventListener("resize", schedule, { passive: true });
+  frame();
+
+  /* one-time reveals */
+  const io = new IntersectionObserver(es => { for (const e of es) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }, { threshold: .18 });
+  document.querySelectorAll(".rise, .rise-fade, .reveal-pic").forEach(el => io.observe(el));
+
+  /* sticky sub navigation: highlight the section in view */
+  const links = [...document.querySelectorAll(".subnav a")];
+  const secs = links.map(a => document.querySelector(a.getAttribute("href")));
+  const spy = new IntersectionObserver(es => {
+    for (const e of es) if (e.isIntersecting) links.forEach((a, i) => a.classList.toggle("is-on", secs[i] === e.target));
+  }, { rootMargin: "-45% 0px -50% 0px" });
+  secs.forEach(s => s && spy.observe(s));
+
+  /* ---------- Platform picker ---------- */
+  const range = document.getElementById("h"), out = document.getElementById("h-out"), floor = document.getElementById("h-floor");
+  const house = document.getElementById("house"), gauge = house.parentElement;
+  const surfBtns = [...document.querySelectorAll("#surf button")], reach = document.getElementById("reach");
+  const list = document.getElementById("types"), cards = [...list.children];
+  const sum = document.getElementById("sum"), ask = document.getElementById("ask");
+  const FLOORS = 10; // 10 × 3 m = 30 m
+  for (let i = 0; i < FLOORS; i++) house.appendChild(document.createElement("i"));
+  let surf = "hard";
+  const word = n => n === 1 ? "typ plošiny" : n < 5 ? "typy plošin" : "typů plošin";
+
+  function evaluate(c, h) {
+    const max = +c.dataset.max || 0;
+    if (surf === "rough" && c.dataset.surf === "hard") return ["no", "Jen pro rovný zpevněný povrch", 99];
+    if (reach.checked && c.dataset.reach !== "1") return ["no", "Bez bočního dosahu", 99];
+    if (!max) return ["ask", "Výšku konkrétního modelu ověří dispečink", 60];
+    if (max < h) return ["no", `Nedosáhne, zdvih jen do ${max} m`, 99];
+    return ["ok", "Vyhovuje", max];
+  }
+
+  function update(animate) {
+    const h = +range.value;
+    range.style.setProperty("--p", `${((h - 2) / 28 * 100).toFixed(1)}%`);
+    out.innerHTML = `${h}<small>m</small>`;
+    const fl = Math.max(1, Math.round(h / 3));
+    floor.textContent = h <= 4 ? "zhruba první patro" : `přibližně ${fl}. patro`;
+    [...house.children].forEach((f, i) => f.classList.toggle("lit", i < Math.round(h / 3)));
+    gauge.style.setProperty("--h", (h / 30).toFixed(3));
+
+    // FLIP: remember positions, re-sort, then animate from old to new
+    const first = new Map(cards.map(c => [c, c.getBoundingClientRect().top]));
+    const res = cards.map(c => ({ c, r: evaluate(c, h) }));
+    let ok = 0;
+    for (const { c, r } of res) {
+      c.classList.remove("ok", "no", "ask", "best");
+      c.classList.add(r[0]);
+      c.querySelector(".why").textContent = r[1];
+      c.style.setProperty("--max", c.dataset.max || 30);
+      c.style.setProperty("--h", h);
+      if (r[0] !== "no") ok++;
+    }
+    const okCards = res.filter(x => x.r[0] === "ok").sort((a, b) => a.r[2] - b.r[2]);
+    const bestMax = okCards.length ? okCards[0].r[2] : 0;
+    okCards.forEach(x => { if (x.r[2] === bestMax) x.c.classList.add("best"); });
+    const order = res.slice().sort((a, b) => a.r[2] - b.r[2] || cards.indexOf(a.c) - cards.indexOf(b.c));
+    order.forEach(({ c }) => list.appendChild(c));
+    if (animate && !reduce.matches) {
+      for (const c of cards) {
+        const dy = first.get(c) - c.getBoundingClientRect().top;
+        if (!dy) continue;
+        c.animate([{ transform: `translateY(${dy}px)` }, { transform: "none" }], { duration: 650, easing: "cubic-bezier(.2,.7,.2,1)" });
+      }
+    }
+    sum.textContent = ok ? `Vyhovuje ${ok} ${word(ok)}` : "Na tuhle kombinaci se zeptejte dispečinku";
+
+    const lines = [`Dobrý den,`, ``, `poptávám pronájem pracovní plošiny.`, `Výška zdvihu: ${h} m`, `Povrch: ${surf === "hard" ? "rovný, zpevněný" : "nezpevněný terén"}`, `Boční dosah: ${reach.checked ? "ano" : "ne"}`];
+    const picks = okCards.filter(x => x.r[2] === bestMax).map(x => x.c.querySelector("h3").textContent.toLowerCase());
+    if (picks.length) lines.push(`Vhodný typ podle webu: ${picks.join(" nebo ")}`);
+    lines.push(``, `Místo a termín: `, ``, `Děkuji`);
+    ask.dataset.msg = lines.slice(2, -3).join("\n").trim().replace(/^./, c => c.toUpperCase());
+  }
+  let raf = 0;
+  range.addEventListener("input", () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => update(true)); });
+  surfBtns.forEach(b => b.addEventListener("click", () => { surf = b.dataset.v; surfBtns.forEach(x => x.setAttribute("aria-pressed", x === b)); update(true); }));
+  reach.addEventListener("change", () => update(true));
+  update(false);
+
+  document.querySelectorAll("img[data-logo]").forEach(i => { i.src = document.querySelector(".logo img").src; });
+  const menu = document.querySelector(".menu");
+  menu.addEventListener("click", e => { if (e.target.closest("a")) menu.open = false; });
+})();
+</script>
+<script>
+(() => {
+  /* Inquiry form. No backend yet: set data-endpoint on #poptavka to a form service URL
+     (e.g. Web3Forms, Formspree or a PHP script on the hosting) and it posts there. */
+  const form = document.getElementById("poptavka");
+  if (!form) return;
+  const sel = form.elements.sluzba, msg = form.elements.zprava, status = form.querySelector(".f-status");
+  let autoMsg = "";
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href="#poptavka"]');
+    if (!a) return;
+    if (a.dataset.svc) {
+      const opt = [...sel.options].find(o => o.text === a.dataset.svc);
+      if (opt) { sel.value = opt.value; const f = sel.closest(".fld"); f.classList.add("flash"); setTimeout(() => f.classList.remove("flash"), 1400); }
+    }
+    if (a.dataset.msg && (!msg.value || msg.value === autoMsg)) { msg.value = autoMsg = a.dataset.msg; }
+    setTimeout(() => form.elements.jmeno.focus({ preventScroll: true }), 650);
+  });
+  const need = () => [...form.querySelectorAll("[required]")].filter(el => el.type === "checkbox" ? !el.checked : !el.value.trim());
+  form.addEventListener("input", e => e.target.closest(".fld, .chk")?.classList.remove("bad"));
+  form.addEventListener("change", e => e.target.closest(".chk")?.classList.remove("bad"));
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    const missing = need();
+    form.querySelectorAll(".bad").forEach(x => x.classList.remove("bad"));
+    if (missing.length) {
+      missing.forEach(el => el.closest(".fld, .chk").classList.add("bad"));
+      status.className = "f-status err"; status.textContent = "Vyplňte prosím označená pole.";
+      missing[0].focus(); return;
+    }
+    if (form.elements.web.value) return;
+    const url = form.dataset.endpoint;
+    if (!url) {
+      status.className = "f-status ok";
+      status.textContent = "Ukázka: formulář je v pořádku, jen ještě není napojený na odesílání.";
+      return;
+    }
+    status.className = "f-status"; status.textContent = "Odesílám…";
+    try {
+      const r = await fetch(url, { method: "POST", body: new FormData(form), headers: { Accept: "application/json" } });
+      if (!r.ok) throw new Error(r.status);
+      form.reset(); status.className = "f-status ok"; status.textContent = "Děkujeme, poptávka odešla. Ozveme se vám.";
+    } catch {
+      status.className = "f-status err"; status.textContent = "Odeslání se nepovedlo. Zkuste to prosím znovu.";
+    }
+  });
+})();
+</script>
+</body>
+</html>
