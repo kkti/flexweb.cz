@@ -171,9 +171,9 @@
   #ds .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px}
   #ds .fgrid .full{grid-column:1/-1}
   #ds label{display:block;font:600 11.5px/1.4 Archivo,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:#3f4b44;margin-bottom:4px}
-  #ds input,#ds textarea{width:100%;min-height:46px;padding:10px 12px;border:1px solid #9aa59e;border-radius:5px;background:#fbfcfb;font:16px "Source Sans 3",sans-serif;color:var(--ink)}
+  #ds input,#ds textarea,#ds select{width:100%;min-height:46px;padding:10px 12px;border:1px solid #9aa59e;border-radius:5px;background:#fbfcfb;font:16px "Source Sans 3",sans-serif;color:var(--ink)}
   #ds textarea{min-height:110px;resize:vertical}
-  #ds input:focus,#ds textarea:focus{outline:2px solid var(--g);outline-offset:1px;border-color:var(--g)}
+  #ds input:focus,#ds textarea:focus,#ds select:focus{outline:2px solid var(--g);outline-offset:1px;border-color:var(--g)}
   #ds input[aria-invalid="true"]{border-color:var(--warn);background:var(--warnbg)}
   #ds .consent{font-size:14px;color:var(--mute);margin:4px 0 16px}
   #ds .fmsg{margin-top:16px;padding:14px 16px;border-radius:6px;background:var(--gl);border:1px solid #b7cdbf;font-size:15.5px}
@@ -256,6 +256,9 @@
   #ds.js-motion .card.live .ph0 img{transition:transform .12s ease-out}
   #ds.js-motion .card .plate::after{opacity:var(--gl,0);transition:opacity .4s}
 
+
+  #ds .mail{font-weight:600;overflow-wrap:anywhere}
+  #ds select{appearance:auto;cursor:pointer}
 
   /* ===== PODSTRÁNKY ===== */
   #ds nav.main a[aria-current="page"]{background:var(--gl);color:var(--g2);box-shadow:inset 0 -2px 0 var(--g)}
@@ -383,7 +386,7 @@
           </div>
           <div class="reach" data-in style="--d:.42s">
             <div><b><a href="tel:+420602259750">+420 602 259 750</a></b>Zdeňka Svobodová, managing director</div>
-            <div><b><a href="mailto:dspraha@dspraha.cz">dspraha@dspraha.cz</a></b>general e-mail</div>
+            <div><b><span class="mail">dspraha@dspraha.cz</span></b>general e-mail</div>
           </div>
         </div>
         <div class="gable">
@@ -440,7 +443,7 @@
           <h2 id="ds-buy">Machine buyout</h2>
           <p>We buy machine tools, forming machines and workshop equipment of Czech and foreign make. Send us the details from the machine’s nameplate.</p>
         </div>
-        <form novalidate data-mail="dspraha@dspraha.cz" data-subject="Machine buyout" data-head="Machine for buyout" data-err="Please fill in the machine type, contact person and a valid e-mail.">
+        <form novalidate data-demo data-err="Please fill in the machine type, contact person and a valid e-mail.">
           <div class="plate">
             <fieldset><legend>Machine</legend><div class="fgrid">
               <div><label for="e-typ">Type *</label><input id="e-typ" name="typ" required autocomplete="off"></div>
@@ -485,11 +488,41 @@
           <div><h3>Warning: fraudulent e-mails</h3><p>Fraudulent e-mails pretending to come from our company are circulating, with fake invoices or malicious attachments. Do not open attachments or links in them, do not make payments based on them, and always check the bank account number.</p></div>
         </div>
         <div class="cgrid">
-          <div class="plate"><div class="ph"><strong>Zdeňka Svobodová</strong><span>director</span></div><p><a class="tel" href="tel:+420602259750">+420 602 259 750</a></p><p><a href="mailto:svobodova@dspraha.cz">svobodova@dspraha.cz</a></p></div>
-          <div class="plate"><div class="ph"><strong>Lukáš Suchý</strong><span>technician</span></div><p><a class="tel" href="tel:+420602145390">+420 602 145 390</a></p><p><a href="mailto:suchy@dspraha.cz">suchy@dspraha.cz</a></p></div>
+          <div class="plate"><div class="ph"><strong>Zdeňka Svobodová</strong><span>director</span></div><p><a class="tel" href="tel:+420602259750">+420 602 259 750</a></p><p><span class="mail">svobodova@dspraha.cz</span></p><p><a class="go" href="#write">Send a message</a></p></div>
+          <div class="plate"><div class="ph"><strong>Lukáš Suchý</strong><span>technician</span></div><p><a class="tel" href="tel:+420602145390">+420 602 145 390</a></p><p><span class="mail">suchy@dspraha.cz</span></p><p><a class="go" href="#write">Send a message</a></p></div>
           <div class="plate"><div class="ph"><strong>Registered office</strong><span>invoicing</span></div><p>DS Praha s.r.o.<br>Křížová 1018/6<br>150 00 Prague 5 – Smíchov</p><p>ID 45797145 · VAT CZ45797145</p></div>
           <div class="plate"><div class="ph"><strong>Warehouse</strong><span>Slaný</span></div><p>Netovická 353<br>274 01 Slaný</p><p>former ČKD Slaný jeřáby site (SALTEN building)</p></div>
         </div>
+      </div>
+    </section>
+
+    <section class="buy" id="write" aria-labelledby="ds-write">
+      <div class="wrap">
+        <div>
+          <h2 id="ds-write">Write to us</h2>
+          <p>A question about a machine in the catalogue, a machine we do not have in stock, service, repairs or relocation.</p>
+        </div>
+        <form novalidate data-demo data-err="Please fill in the contact person, a valid e-mail and your message.">
+          <div class="plate">
+            <fieldset><legend>Message for</legend>
+              <div style="margin-bottom:14px"><label for="w-komu">To</label><select id="w-komu" name="komu">
+                <option value="dspraha">DS Praha s.r.o. – general e-mail</option>
+                <option value="svobodova">Zdeňka Svobodová, director</option>
+                <option value="suchy">Lukáš Suchý, technician</option>
+              </select></div>
+            </fieldset>
+            <fieldset><legend>Contact</legend><div class="fgrid">
+              <div><label for="w-firma">Company</label><input id="w-firma" name="firma" autocomplete="organization"></div>
+              <div><label for="w-osoba">Contact person *</label><input id="w-osoba" name="osoba" required autocomplete="name"></div>
+              <div><label for="w-tel">Phone</label><input id="w-tel" name="telefon" type="tel" autocomplete="tel"></div>
+              <div><label for="w-mail">E-mail *</label><input id="w-mail" name="email" type="email" required autocomplete="email"></div>
+            </div>
+            <div style="margin-top:12px"><label for="w-zprava">Message *</label><textarea id="w-zprava" name="zprava" required></textarea></div></fieldset>
+            <p class="consent">By sending the form you agree to the <a href="https://www.dspraha.cz/cz/gdpr" lang="cs">processing of personal data</a>.</p>
+            <button class="btn solid" type="submit">Send message</button>
+            <div class="fmsg" role="status" aria-live="polite" hidden></div>
+          </div>
+        </form>
       </div>
     </section>
   </main>
@@ -543,8 +576,8 @@
     $$('.gallery .thumbs button').forEach(function(x){x.setAttribute('aria-current',x===b?'true':'false');});
   });});
 
-  // formuláře – v návrhu nenapojené: validace, pak předvyplněný e-mail
-  $$('form[data-mail]').forEach(function(form){
+  // formuláře – v demu nenapojené: validace, pak oznámení, že se nic neodeslalo (žádný e-mailový odkaz)
+  $$('form[data-demo]').forEach(function(form){
     var msg=form.querySelector('.fmsg');
     form.addEventListener('submit',function(e){
       e.preventDefault();
@@ -555,21 +588,15 @@
       });
       msg.hidden=false;
       if(bad.length){msg.className='fmsg err';msg.textContent=form.dataset.err;bad[0].focus();return;}
-      var lines=[form.dataset.head||''];
-      form.querySelectorAll('input,textarea').forEach(function(i){
-        var l=form.querySelector('label[for="'+i.id+'"]');
-        if(i.type==='hidden'){lines.push(i.value);return;}
-        lines.push((l?l.textContent.replace(/\s*\*$/,''):i.name)+': '+i.value);
-      });
-      var subj=form.dataset.subject+(form.typ&&form.typ.value?' – '+form.typ.value:'');
-      var href='mailto:'+form.dataset.mail+'?subject='+encodeURIComponent(subj)+'&body='+encodeURIComponent(lines.join('\n'));
-      msg.className='fmsg'; msg.innerHTML='';
-      var p=document.createElement('p');p.style.margin='0 0 8px';
-      p.textContent=EN?'This is only a website concept – nothing has been sent. You can e-mail the details directly to the company:':'Tohle je jen návrh webu – formulář nic neodeslal. Údaje můžete poslat e-mailem přímo firmě:';
-      var a=document.createElement('a');a.href=href;a.className='btn line';a.textContent=(EN?'Open e-mail to ':'Otevřít e-mail na ')+form.dataset.mail;
-      msg.appendChild(p);msg.appendChild(a);
+      msg.className='fmsg';
+      msg.innerHTML=EN
+        ? '<strong>Thank you.</strong> This is a website demo – the form is not connected, so your message has not been sent anywhere.'
+        : '<strong>Děkujeme.</strong> Tohle je ukázka webu – formulář není napojený, zpráva se nikam neodeslala.';
     });
   });
+  // adresát kontaktního formuláře podle odkazu (?komu=…)
+  var komu=new URLSearchParams(location.search).get('komu'), sel=$('select[name="komu"]');
+  if(sel&&komu&&sel.querySelector('option[value="'+komu+'"]')) sel.value=komu;
 
   // ===== POHYB =====
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)');
